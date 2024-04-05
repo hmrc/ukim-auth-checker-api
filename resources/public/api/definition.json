@@ -4,7 +4,7 @@
   "api": {
     "name": "UKIM Auth Checker API",
     "description": "The public-facing API to allow FPOs to request information on UKIM authorisations for the holders of EORI numbers",
-    "context": "/customs/uk-internal-market",
+    "context": "customs/uk-internal-market",
     "categories": ["CUSTOMS"],
     "versions": [
       {
