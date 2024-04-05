@@ -10,7 +10,7 @@
       {
         "version": "1.0",
         "status": "ALPHA",
-        "endpointsEnabled": true,
+        "endpointsEnabled": false,
         "access": {
           "type": "PRIVATE"
         }
