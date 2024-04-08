@@ -1,49 +1,83 @@
-openapi: "3.0.3"
-
+openapi: 3.0.3
 info:
-  version: 1.0.0
-  title: Hello World
-
+  title: UKIM Auth Checker
+  description: |-
+    This API allows invited users to validate if the holders of EORI Numbers have a UKIM authorisation.
+    
+    Some useful links:
+    - [Github]()
+    - [Source API definition]()
+  version: 0.0.1
 servers:
-  - url: https://test-api.service.hmrc.gov.uk/hello-world
-    description: Sandbox
-  - url: https://api.service.hmrc.gov.uk/hello-world
-    description: Production
-
-components:
-  parameters:
-    acceptHeader:
-      name: Accept
-      in: header
-      schema:
-        type: string
-        enum: [
-          "application/vnd.hmrc.1.0+json",
-          "application/vnd.hmrc.1.0+xml"
-        ]
-      required: true
-
+  - url: https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
+    description: Test Environment
+  - url: https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
+    description: Live Environment
+tags:
+  - name: authorisations
+    description: UKIM Auth Status about EORI holders
 paths:
-  /hello-world:
+  /authorisations:
     get:
-      summary: Placeholder hello world endpoint
-      description: |
-        An endpoint that returns "Hello world"
       tags:
-        - ukim-auth-checker-api
+        - authorisations
+      summary: Request Authorisation Status for EORIs
+      description: Request the UKIM Authorization Status of 1-3000 EORIs
+      operationId: requestAuth
       parameters:
-        - $ref: '#/components/parameters/acceptHeader'
+        - name: eoris
+          in: query
+          description: Comma-seperated list of EORI Numbers
+          example: GB777777777777, XI123456789123
+          required: true
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: date
+          in: query
+          description: Date used to determine validity. If empty date of submission is used
+          example: 31-02-2024
+          required: false
+          explode: true
+          schema:
+            type: string
       responses:
-        200:
-          description: "OK Response"
+        '200':
+          description: List of EORI Numbers provided with their authorised status as a boolean
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                "Hello world"
-      security:
-        - {}
+                $ref: '#/components/schemas/Authorisations'
+        '400':
+          description: Validation failure
+        '403':
+          description: Forbidden
+        '405':
+          description: Method not allowed
+        '406':
+          description: Not acceptable
+        '429':
+          description: Request in excess of rate lime
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Authorisations:
+      type: object
+      properties:
+        date:
+          type: string
+          example: 2024-02-31
+        eoris:
+          type: array
+          items:
+            type: object
+            properties:
+              eori:
+                type: string
+                example: GB123123123123
+              authorised:
+                type: boolean
+                example: true
