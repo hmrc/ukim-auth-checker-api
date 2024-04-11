@@ -62,9 +62,9 @@ Example of Curl script with URL and query parameters here
 
 ```curl
 
-curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations'
+curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations' \
 
---header 'Content-Type: application/x-www-form-urlencoded' \ ?????
+--header 'Content-Type: application/text/csv' \
 --data-urlencode 'eori=**************' \
 --data-urlencode 'date=**************' \
 
