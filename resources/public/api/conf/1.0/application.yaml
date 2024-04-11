@@ -1,4 +1,4 @@
-r openapi: 3.0.3
+openapi: 3.0.3
 info:
   title: UKIM EORI Authorisaton Checker
   description: |
