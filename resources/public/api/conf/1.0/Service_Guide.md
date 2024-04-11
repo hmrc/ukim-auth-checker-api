@@ -56,10 +56,9 @@ Sandbox	https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authoris
 Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
 
 ### Validating a collection of EORI numbers
-Link to GET method in UKIMS v1.0 Reference Guide
-
+Link to GET method in UKIMS v1.0 Reference Guide here
 ### Example of a GET request
-Example of Curl script with URL and query parameters
+Example of Curl script with URL and query parameters here
 
 ## Error Responses
 
@@ -72,6 +71,7 @@ An introduction to the expected Error Reponses
 ## Process flows
 
 ### Basic Sequence diagrams
+Basic sequence diagrams here 
 
 
 ## API rate limiting
