@@ -11,7 +11,7 @@ info:
     
     Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. You can use the API to send both small (up to 5MB in size) and large (up to 8MB in size) messages. 
     
-    Note: The API endpoint relate only to Great Britain and Northern Ireland.
+    Note: The API endpoint relates only to Great Britain and Northern Ireland.
 
     
     Some useful links:
