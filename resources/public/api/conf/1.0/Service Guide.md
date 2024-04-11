@@ -2,11 +2,10 @@
 title: UKIMS API Service Guide
 weight: 1
 description: Software developers, designers, product owners or business analysts. 
-Learn about the processes involved in passing EORI numbers to check UKIM validity for Fast Parcel Operators (FPOs) and other third party operators.
 ---
 
 # API Service Guide
-This initial discovery document shows developers and other users how to use UK Internal Market Scheme (UKIMS) API with their software.
+This initial discovery document shows developers and other users how to use UK Internal Market Scheme (UKIMS) API with their software. Learn about the processes involved in passing EORI numbers to check UKIM validity for Fast Parcel Operators (FPOs) and other third party operators.
 
 ## API Overview 
 
