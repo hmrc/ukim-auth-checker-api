@@ -2,7 +2,16 @@ openapi: 3.0.3
 info:
   title: UKIM Auth Checker
   description: |-
-    This API allows invited users to validate if the holders of EORI Numbers have a UKIM authorisation.
+    This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+    
+    The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
+    
+    Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
+    
+    You can use the API to send both small (up to 5MB in size) and large (up to 8MB in size) messages. 
+    
+    Note: The API endpoint relates only to Great Britain and Northern Ireland.
+
     
     Some useful links:
     - [Github]()
@@ -10,9 +19,9 @@ info:
   version: 0.0.1
 servers:
   - url: https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-    description: Test Environment
+    description: URL for the Test Environment
   - url: https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-    description: Live Environment
+    description: URL for the Live Environment
 tags:
   - name: authorisations
     description: UKIM Auth Status about EORI holders
