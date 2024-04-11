@@ -1,14 +1,24 @@
+---
+title: UKIMS API Service Guide
+weight: 1
+description: Software developers, designers, product owners or business analysts. 
+Learn about the processes involved in passing EORI numbers to check UKIM validity for Fast Parcel Operators (FPOs) and other third party operators.
+---
+
 API Service Guide
 This initial discovery document shows developers and other users how to use UK Internal Market Scheme (UKIMS) API with their software.
 
-Structure (TBD)
 Overview 
 
-The UKIMS API allows invited users to validate that the holders of EORI Numbers have a UKIM authorisation.
+This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
+    
+The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
+    
+Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. You can use the API to send both small (up to 5MB in size) and large (up to 8MB in size) messages. 
+    
+Note: The API endpoint relate only to Great Britain and Northern Ireland.
 
-
-
-It is based on REST principles with a GET method endpoint that returns data in JSON format, and it uses standard HTTP error response codes.
 
 Use the API to:
 
