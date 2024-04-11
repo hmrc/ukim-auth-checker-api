@@ -2,7 +2,9 @@ openapi: 3.0.3
 info:
   title: UKIM Auth Checker
   description: |-
-    "# Overview\nThis API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+    Overview
+    
+    This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
     
     The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
     
@@ -10,7 +12,7 @@ info:
     
     You can use the API to send both small (up to 5MB in size) and large (up to 8MB in size) messages. 
     
-    Note: The API endpoint relates only to Great Britain and Northern Ireland.
+    Note: The API endpoint relate only to Great Britain and Northern Ireland.
 
     
     Some useful links:
@@ -31,11 +33,12 @@ paths:
       tags:
         - authorisations
       summary: Request Authorisation Status for EORIs
-      description: Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array. There are two query parameters - eoriList and validityDate.
+      description: Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
+      There are two query parameters - eori and date.
         
       operationId: requestAuth
       parameters:
-        - name: eoris
+        - name: eori
           in: query
           description: Comma-seperated list of EORI Numbers
           example: GB777777777777, XI123456789123
@@ -47,7 +50,7 @@ paths:
               type: string
         - name: date
           in: query
-          description: Date used to determine validity. If empty date of submission is used
+          description: Date used to determine validity. If empty, date of submission is used
           example: 31-02-2024
           required: false
           explode: true
