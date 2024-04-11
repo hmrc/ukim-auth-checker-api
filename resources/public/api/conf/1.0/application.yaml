@@ -1,4 +1,4 @@
-openapi: 3.0.3
+r openapi: 3.0.3
 info:
   title: UKIM EORI Authorisaton Checker
   description: |
@@ -39,7 +39,7 @@ paths:
         Request Authorisation Status for EORIs
       description: |
         Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
-        There are two string query parameters - eori and date.  
+        There are two string query header parameters - eori and date.  
       operationId: requestAuth
       parameters:
         - name: eori
