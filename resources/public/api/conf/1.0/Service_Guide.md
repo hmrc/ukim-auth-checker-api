@@ -1,7 +1,7 @@
  ---
 title: UKIMS API Service Guide
 weight: 1
-description: Software developers, designers, product owners or business analysts. 
+description: Software developers, designers, product owners or business analysts. Processes involved in passing EORI numbers to check UKIM validity
 ---
 
 # API Service Guide
