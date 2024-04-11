@@ -52,10 +52,12 @@ Before sending any requests to UKIMS API v1.0, you should ensure that you are us
 
 
 Sandbox	https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-Validating a collection of EORI numbers
 
+Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
+
+### Validating a collection of EORI numbers
 Link to GET method in UKIMS v1.0 Reference Guide
+
 ### Example of a GET request
 
 
