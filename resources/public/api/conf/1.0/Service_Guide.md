@@ -14,7 +14,7 @@ The aim is to avoid possible rejections of goods moving through from GB-NI, whic
     
 The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. You can use the API to send both small (up to 5MB in size) and large (up to 8MB in size) messages. 
     
-Note: The API endpoint relates only to Great Britain and Northern Ireland.
+**Note:** The API endpoint relates only to Great Britain and Northern Ireland.
 
 ## API Status
 
@@ -59,6 +59,10 @@ Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisat
 Link to GET method in UKIMS v1.0 Reference Guide here
 ### Example of a GET request
 Example of Curl script with URL and query parameters here
+
+''' curl
+curl 
+'''
 
 ## Error Responses
 
