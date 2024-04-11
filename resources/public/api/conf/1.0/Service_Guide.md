@@ -20,9 +20,9 @@ Note: The API endpoint relates only to Great Britain and Northern Ireland.
 
 This version of the UKIMS API:
 
-supports only the  UKIMS API v1.0
-is currently not ready for testing
-will not be ready for use in production until the service goes live 
+- supports only the  UKIMS API v1.0
+- is currently not ready for testing
+- will not be ready for use in production until the service goes live 
 
 ### Use the API to:
 
@@ -59,12 +59,14 @@ Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisat
 Link to GET method in UKIMS v1.0 Reference Guide
 
 ### Example of a GET request
-
+Example of Curl script with URL and query parameters
 
 ## Error Responses
 
 An introduction to the expected Error Reponses
-
+200
+400
+404
 
 
 ## Process flows
