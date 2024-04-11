@@ -61,7 +61,10 @@ Link to GET method in UKIMS v1.0 Reference Guide here
 Example of Curl script with URL and query parameters here
 
 ''' curl
-https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
+curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations'
+--header 'Content-Type: application/x-www-form-urlencoded' \ ?????
+--data-urlencode 'eori=**************' \
+--data-urlencode 'date=**************' \
 '''
 
 ## Error Responses
