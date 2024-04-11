@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: UKIM Auth Checker
   description: |-
-    This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+    "# Overview\nThis API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
     
     The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
     
@@ -31,7 +31,7 @@ paths:
       tags:
         - authorisations
       summary: Request Authorisation Status for EORIs
-      description: Request the UKIM Authorization Status of 1-3000 EORIs
+      description: Request the UKIM Authorization Status of 1-3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array. 
       operationId: requestAuth
       parameters:
         - name: eoris
