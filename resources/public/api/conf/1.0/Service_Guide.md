@@ -97,40 +97,54 @@ Example of a succesful response
 
 An introduction to the expected Success and Error Reponses:
 
+```code
 200
 description:
 Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. The resource has been fetched and transmitted in the message body.
-          
+```
+
+```code          
 400
 description: 
 Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+```
 
+```code
 403
 description:
 Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.
+```
 
+```code
 405
 description:
 Method not allowed. The request method is known by the server but is not supported by the target resource. 
+```
 
+```code
 406
 description:
 Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent.
+```
 
+```code
 429
 description:
 Request in excess of rate limit. The user has sent too many requests in a given amount of time ("rate limiting").
+```
 
+```code
 500
 description: 
 Internal Server Error. The server has encountered a situation it does not know how to handle.
-
+```
 
 ## Process flows
 tbd
 
 ### Basic Sequence diagrams
 Basic sequence diagrams here 
+
 tbd
 
 ## API rate limiting
