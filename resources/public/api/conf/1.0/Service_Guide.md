@@ -16,6 +16,12 @@ The API is based on REST principles with a single GET method endpoint that retur
     
 **Note:** The API endpoint relates only to Great Britain and Northern Ireland.
 
+### User Interface
+
+The landing page for User Input Interface is shown below. 
+
+
+
 ### What is an EORI?
 The acronym EORI stands for Economic Operators Registration and Identification. It is a unique identification number used by customs authorities throughout the European Union (EU) 12. This system, instituted on July 1, 2009, replaced the older Trader’s Unique Reference Number (TURN). The EORI number plays a critical role in facilitating the import and export of goods both within the EU and with countries outside of it. Whether you’re a business or an individual, understanding the EORI system is crucial if you plan to engage in international trade. For those based in the UK, HM Revenue and Customs (HMRC) are responsible for allocating these numbers.
 
@@ -130,7 +136,7 @@ Not acceptable. This response is sent when the web server, after performing serv
 ```code
 429
 description:
-Request in excess of rate limit. The user has sent too many requests in a given amount of time ("rate limiting").
+Request in excess of rate limit. The user has sent too many requests in a given amount of time ( See "API rate limiting" below).
 ```
 
 ```code
