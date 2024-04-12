@@ -73,7 +73,8 @@ Sandbox	https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authoris
 Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
 
 ### Validating a collection of EORI numbers
-Link to GET method in UKIMS v1.0 Reference Guide here
+
+Link to GET method in UKIMS v1.0 Reference Guide [here](/resources/public/api/conf/1.0/application.yaml)
 
 
 ### Example of a GET request
