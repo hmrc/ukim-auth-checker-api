@@ -76,8 +76,8 @@ Example of Curl script with URL and query parameters
 curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations' \
 
 --header 'Content-Type: application/text/csv' \
---data-urlencode 'eori=**************' \
---data-urlencode 'date=**************' \
+--data-urlencode 'eori=GB123123123123' \
+--data-urlencode 'date=2024-02-31' \
 
 ```
 Example of a succesful response
