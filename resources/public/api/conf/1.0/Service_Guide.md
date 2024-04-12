@@ -5,7 +5,7 @@ description: Software developers, designers, product owners or business analysts
 ---
 
 # API Service Guide
-This initial discovery document shows developers and other users how to use UK Internal Market Scheme (UKIMS) API with their software. Learn about the processes involved in passing EORI numbers to check UKIM validity for Fast Parcel Operators (FPOs) and other third party operators.
+This initial discovery document shows developers and other users how to use the UK Internal Market Scheme (UKIMS) API together with their software. Learn about the processes involved in passing EORI numbers to check UKIM validity for Fast Parcel Operators (FPOs) and other third party operators.
 
 ## API Overview 
 
@@ -23,17 +23,17 @@ A breakdown of the EORI number format for UK VAT-registered businesses:
 
 - GB: Indicates that the business is based in the UK.
 - 205672212: Represents the business’s VAT Registration Number.
-- 000: These three zeros are always added to the end of a UK EORI number 1.
+- 000: These three zeros are always added to the end of a UK EORI number.
 
-In summary, having an EORI number is essential for anyone involved in international trade, as it allows customs authorities to monitor and track shipments effectively. You’ll need an EORI if you:
+In summary, having an EORI number is essential for anyone involved in international trade, as it allows customs authorities to monitor and track shipments effectively.
 
 ## API Status
 
 This version of the UKIMS API:
 
-- supports only the  UKIMS API v1.0
-- is currently not ready for testing
-- will not be ready for use in production until the service goes live 
+- supports **only** the  UKIMS API v1.0
+- is currently **not** ready for testing
+- will **not** be ready for use in production until the service goes live 
 
 ### Use the API to:
 
@@ -75,11 +75,7 @@ Example of Curl script with URL and query parameters
 
 ```curl
 
-curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations' \
-
---header 'Content-Type: application/text/csv' \
---data-urlencode 'eori=GB123123123123' \
---data-urlencode 'date=2024-02-31' \
+curl --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations?date=2024-02-31&eoris=GB123123123123,GB123123123123,GB123123123123'
 
 ```
 
@@ -98,7 +94,6 @@ Example of a succesful response
 
 ```
 ## Error Responses
-
 
 An introduction to the expected Success and Error Reponses:
 
