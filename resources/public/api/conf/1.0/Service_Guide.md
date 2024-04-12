@@ -16,6 +16,17 @@ The API is based on REST principles with a single GET method endpoint that retur
     
 **Note:** The API endpoint relates only to Great Britain and Northern Ireland.
 
+### What is an EORI?
+The acronym EORI stands for Economic Operators Registration and Identification. It is a unique identification number used by customs authorities throughout the European Union (EU) 12. This system, instituted on July 1, 2009, replaced the older Trader’s Unique Reference Number (TURN). The EORI number plays a critical role in facilitating the import and export of goods both within the EU and with countries outside of it. Whether you’re a business or an individual, understanding the EORI system is crucial if you plan to engage in international trade. For those based in the UK, HM Revenue and Customs (HMRC) are responsible for allocating these numbers.
+
+A breakdown of the EORI number format for UK VAT-registered businesses:
+
+- GB: Indicates that the business is based in the UK.
+- 205672212: Represents the business’s VAT Registration Number.
+- 000: These three zeros are always added to the end of a UK EORI number 1.
+
+In summary, having an EORI number is essential for anyone involved in international trade, as it allows customs authorities to monitor and track shipments effectively. You’ll need an EORI if you:
+
 ## API Status
 
 This version of the UKIMS API:
