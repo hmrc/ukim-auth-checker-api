@@ -68,6 +68,8 @@ Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisat
 
 ### Validating a collection of EORI numbers
 Link to GET method in UKIMS v1.0 Reference Guide here
+
+
 ### Example of a GET request
 Example of Curl script with URL and query parameters
 
@@ -80,6 +82,7 @@ curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-i
 --data-urlencode 'date=2024-02-31' \
 
 ```
+
 Example of a succesful response
 
 ```code
@@ -96,17 +99,44 @@ Example of a succesful response
 ```
 ## Error Responses
 
-An introduction to the expected Error Reponses
+
+An introduction to the expected Success and Error Reponses:
+
 200
+description:
+Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. 
+          
 400
-404
+description: 
+Validation failure
+
+403
+description: 
+Forbidden
+
+405
+description:
+Method not allowed
+
+406
+description
+Not acceptable
+
+429
+description:
+Request in excess of rate lime
+
+500
+description: 
+Internal Server Error2
 
 
 ## Process flows
+tbd
 
 ### Basic Sequence diagrams
 Basic sequence diagrams here 
-
+tbd
 
 ## API rate limiting
 Each software house should register a single application with HMRC. This application will be used to identify the software house during the OAuth 2.0 grant flow and will also be used in subsequent per user API calls. We limit the number of requests that each application can make. This protects our backend service against excessive load and encourages real-time API calls over batch processing.
