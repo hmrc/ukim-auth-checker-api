@@ -58,7 +58,7 @@ Production	https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisat
 ### Validating a collection of EORI numbers
 Link to GET method in UKIMS v1.0 Reference Guide here
 ### Example of a GET request
-Example of Curl script with URL and query parameters here
+Example of Curl script with URL and query parameters
 
 ```curl
 
@@ -69,7 +69,20 @@ curl --location --request GET 'https://test-api.service.hmrc.gov.uk/customs/uk-i
 --data-urlencode 'date=**************' \
 
 ```
+Example of a succesful response
 
+```code
+{
+  "date": "2024-02-31",
+  "eoris": [
+    {
+      "eori": "GB123123123123",
+      "authorised": true
+    }
+  ]
+}
+
+```
 ## Error Responses
 
 An introduction to the expected Error Reponses
