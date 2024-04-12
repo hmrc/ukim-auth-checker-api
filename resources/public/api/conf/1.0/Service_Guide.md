@@ -1,4 +1,4 @@
----
+3---
 title: UKIMS API Service Guide
 weight: 1
 description: Software developers, designers, product owners or business analysts. Processes involved in passing EORI numbers to check UKIM validity
@@ -99,31 +99,31 @@ An introduction to the expected Success and Error Reponses:
 
 200
 description:
-Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. 
+Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. The resource has been fetched and transmitted in the message body.
           
 400
 description: 
-Validation failure
+Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
 
 403
-description: 
-Forbidden
+description:
+Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.
 
 405
 description:
-Method not allowed
+Method not allowed. The request method is known by the server but is not supported by the target resource. 
 
 406
-description
-Not acceptable
+description:
+Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent.
 
 429
 description:
-Request in excess of rate lime
+Request in excess of rate limit. The user has sent too many requests in a given amount of time ("rate limiting").
 
 500
 description: 
-Internal Server Error2
+Internal Server Error. The server has encountered a situation it does not know how to handle.
 
 
 ## Process flows
