@@ -143,15 +143,7 @@ Request in excess of rate limit. The user has sent too many requests in a given 
 description: 
 Internal Server Error. The server has encountered a situation it does not know how to handle.
 ```
-
-## Process flows
-tbd
-
-### Basic Sequence diagrams
-Basic sequence diagrams here 
-
-tbd
-
+ 
 ## API rate limiting
 Each software house should register a single application with HMRC. This application will be used to identify the software house during the OAuth 2.0 grant flow and will also be used in subsequent per user API calls. We limit the number of requests that each application can make. This protects our backend service against excessive load and encourages real-time API calls over batch processing.
 
