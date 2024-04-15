@@ -43,7 +43,7 @@ paths:
           in: query
           description: |
             Comma-seperated list of EORI Numbers
-          example: GB777777777777, XI123456789123
+          example: [GB777777777777, XI123456789123]
           required: true
           explode: false
           schema:
