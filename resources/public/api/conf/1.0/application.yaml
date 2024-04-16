@@ -35,10 +35,10 @@ paths:
         Request Authorisation Status for provided EORIs
       description: |
         Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
-        There are two string query header parameters - eori and date.  
+        There are two string query header parameters - eoris and date.  
       operationId: requestAuth
       parameters:
-        - name: eori
+        - name: eoris
           in: query
           description: |
             Input supplied by the user as a string array of Comma-seperated EORI Numbers.
@@ -94,7 +94,7 @@ components:
       properties:
         date:
           type: string
-          example: '2024-02-31'
+          example: 2024-02-31
         eoris:
           type: array
           items:
