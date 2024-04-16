@@ -12,8 +12,8 @@ info:
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
   contact:
     name: Keith Birch
-    email: 'keith.birch@digital.hmrc.uk.gov'
-    url: 'keith.birch@digital.hmrc.uk.gov'
+    email: keith.birch@digital.hmrc.uk.gov
+    url: keith.birch@digital.hmrc.uk.gov
   version: 0.0.1
 servers:
   - url: 'https://test-api.service.hmrc.gov.uk'
