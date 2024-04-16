@@ -1,6 +1,6 @@
-penapi: 3.0.3
+openapi: 3.0.3
 info:
-  title: UKIM EORI Authorisaton Checker
+  title: UKIM EORI Authorisaton Checker UKIM EORI Authorisaton Checker Reference Guide
   description: |
     Overview
 
@@ -41,7 +41,7 @@ paths:
         - name: eori
           in: query
           description: |
-            Input supplied as an array by user as Comma-seperated list of EORI Numbers
+            Input supplied by the user as a string array of Comma-seperated EORI Numbers.
           example:
             [GB777777777777, XI123456789123]
           required: true
@@ -53,7 +53,7 @@ paths:
         - name: date
           in: query
           description: |
-            Date used to determine validity. If this field is empty, the date of submission is used
+            The date used to determine validity. If this field is empty, the date of submission is used.
           example: 31-02-2024
           required: false
           explode: true
