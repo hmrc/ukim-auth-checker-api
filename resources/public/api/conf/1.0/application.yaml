@@ -12,7 +12,7 @@ info:
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
   contact:
     name: Keith Birch
-    email: keith.birch@digital.hmrc.uk.gov
+    email: 'keith.birch@digital.hmrc.uk.gov'
     url: 'keith.birch@digital.hmrc.uk.gov'
   version: 0.0.1
 servers:
@@ -53,7 +53,7 @@ paths:
         - name: date
           in: query
           description: |
-            The date used to determine validity. If this field is empty, the date of submission is used.
+            The date used to determine validity. If this field is empty, the date of submission is used. The format is DD-MM-YYYY.
           example: 31-02-2024
           required: false
           explode: true
