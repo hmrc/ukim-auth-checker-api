@@ -1,34 +1,49 @@
 openapi: 3.0.3
 info:
-  title: UKIM Auth Checker
-  description: |-
-    This API allows invited users to validate if the holders of EORI Numbers have a UKIM authorisation.
-    
-    Some useful links:
-    - [Github]()
-    - [Source API definition]()
+  title: UKIM EORI Authorisaton Checker Reference Guide
+  description: |
+    Overview
+
+    This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+    The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
+    The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
+    Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
+
+    Note: The API endpoint relates only to Great Britain and Northern Ireland.
+  contact:
+    name: Keith Birch
+    email: keith.birch@digital.hmrc.uk.gov
+    url: keith.birch@digital.hmrc.uk.gov
   version: 0.0.1
 servers:
-  - url: https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-    description: Test Environment
-  - url: https://api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations
-    description: Live Environment
+  - url: 'https://test-api.service.hmrc.gov.uk'
+    description: |
+      URL for the Test Environment
+  - url: 'https://api.service.hmrc.gov.uk'
+    description: |
+      URL for the Live Environment
 tags:
-  - name: authorisations
-    description: UKIM Auth Status about EORI holders
+  - name: Authorisations
+    description: |
+      UKIM Authorisation Status about EORI holders
 paths:
-  /authorisations:
+  /customs/uk-internal-market/authorisations:
     get:
       tags:
-        - authorisations
-      summary: Request Authorisation Status for EORIs
-      description: Request the UKIM Authorization Status of 1-3000 EORIs
+        - Authorisations
+      summary: |
+        Request Authorisation Status for provided EORIs
+      description: |
+        Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
+        There are two string query header parameters - eoris and date.  
       operationId: requestAuth
       parameters:
         - name: eoris
           in: query
-          description: Comma-seperated list of EORI Numbers
-          example: GB777777777777, XI123456789123
+          description: |
+            Input supplied by the user as a string array of Comma-seperated EORI Numbers.
+          example:
+            [GB777777777777, XI123456789123]
           required: true
           explode: false
           schema:
@@ -37,7 +52,8 @@ paths:
               type: string
         - name: date
           in: query
-          description: Date used to determine validity. If empty date of submission is used
+          description: |
+            The date used to determine validity. If this field is empty, the date of submission is used. The format is DD-MM-YYYY.
           example: 31-02-2024
           required: false
           explode: true
@@ -45,23 +61,32 @@ paths:
             type: string
       responses:
         '200':
-          description: List of EORI Numbers provided with their authorised status as a boolean
+          description: |
+            Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. 
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorisations'
         '400':
-          description: Validation failure
+          description: |
+            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
         '403':
-          description: Forbidden
+          description: |
+            Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.
         '405':
-          description: Method not allowed
+          description: |
+            Method not allowed. The request method is known by the server but is not supported by the target resource. 
         '406':
-          description: Not acceptable
+          description: |
+            Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent.
         '429':
-          description: Request in excess of rate lime
+          description: |
+            Request in excess of rate limit. The user has sent too many requests in a given amount of time.
         '500':
-          description: Internal Server Error
+          description: |
+            Internal Server Error. The server has encountered a situation it does not know how to handle.
+      x-stoplight:
+        id: l4z9id8uvcvj0
 components:
   schemas:
     Authorisations:
