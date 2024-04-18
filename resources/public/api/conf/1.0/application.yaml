@@ -35,7 +35,7 @@ paths:
       description: |
         Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
         There are two string query header parameters - eoris and date.  
-        Example: 
+        Request Example: 
         curl --location GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations?date=31-02-2024&eoris=GB123123123123,GB123123123123,GB123123123123'
       operationId: requestAuth
       parameters:
