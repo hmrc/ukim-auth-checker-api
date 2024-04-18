@@ -2,8 +2,6 @@ openapi: 3.0.3
 info:
   title: UKIM EORI Authorisaton Checker Reference Guide
   description: |
-    Overview
-
     This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
     The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
     The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
@@ -23,27 +21,30 @@ servers:
     description: |
       URL for the Live Environment
 tags:
+  - name: Endpoint
   - name: Authorisations
     description: |
-      UKIM Authorisation Status about EORI holders
+      UKIM Authorisation Status on EORI holders
 paths:
   /customs/uk-internal-market/authorisations:
     get:
       tags:
         - Authorisations
       summary: |
-        Request Authorisation Status for provided EORIs
+        Request Authorisation Status for user provided EORIs
       description: |
         Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
         There are two string query header parameters - eoris and date.  
+        Example: 
+        curl --location GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations?date=31-02-2024&eoris=GB123123123123,GB123123123123,GB123123123123'
       operationId: requestAuth
       parameters:
         - name: eoris
           in: query
           description: |
-            Input supplied by the user as a string array of Comma-seperated EORI Numbers.
+            Input supplied by the user as a string array of comma-seperated EORI Numbers.
           example:
-            [GB777777777777, XI123456789123]
+            GB777777777777, XI123456789123
           required: true
           explode: false
           schema:
