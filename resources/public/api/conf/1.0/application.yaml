@@ -10,10 +10,7 @@ info:
     Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
 
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
-  contact:
-    name: Keith Birch
-    email: keith.birch@digital.hmrc.uk.gov
-    url: keith.birch@digital.hmrc.uk.gov
+  contact: {}
   version: 0.0.1
 servers:
   - url: 'https://test-api.service.hmrc.gov.uk'
