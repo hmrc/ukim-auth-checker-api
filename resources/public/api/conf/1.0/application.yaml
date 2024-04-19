@@ -8,10 +8,7 @@ info:
     Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
 
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
-  contact:
-    name: Keith Birch
-    email: keith.birch@digital.hmrc.uk.gov
-    url: keith.birch@digital.hmrc.uk.gov
+  contact: {}
   version: 0.0.1
 servers:
   - url: 'https://test-api.service.hmrc.gov.uk'
@@ -89,6 +86,16 @@ paths:
           description: |
             Internal Server Error. The server has encountered a situation it does not know how to handle.
 components:
+  securitySchemes:
+    applicationRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating application restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints for details.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          scopes: { }
   schemas:
     Authorisations:
       type: object
