@@ -85,6 +85,8 @@ paths:
         '500':
           description: |
             Internal Server Error. The server has encountered a situation it does not know how to handle.
+      security:
+        - { }
 components:
   securitySchemes:
     applicationRestricted:
