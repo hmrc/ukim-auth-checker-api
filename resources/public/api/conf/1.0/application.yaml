@@ -32,9 +32,7 @@ paths:
         
         There are two string query header parameters - eoris and date.  
         
-        Request Example: 
         
-        curl --location POST 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations?date=31-02-2024&eoris=GB123123123123,GB123123123123,GB123123123123'
         
       operationId: requestAuth
       parameters:
@@ -60,7 +58,14 @@ paths:
           schema:
             type: string
       requestBody:
-        description: 
+        description: | 
+          The payload of the API request. 
+          
+          Request Example:
+          
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations"   
+  
+                  
         required: true
         content:
           application/json:
@@ -116,7 +121,7 @@ components:
           type: array
           items:
             type: string
-            example: GB123123123123
+            example: GB123123123123s
     Authorisations:
       type: object
       properties:
