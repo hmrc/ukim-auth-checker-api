@@ -24,12 +24,11 @@ paths:
   /customs/uk-internal-market/authorisations:
     get:
       tags:
-        - Authorisations
-        
+        - Endpoint for Authorisations
       summary: |
         Request Authorisation Status for user provided EORIs
       description: |
-        Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
+        Use this method to request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
         
         There are two string query header parameters - eoris and date.  
         
