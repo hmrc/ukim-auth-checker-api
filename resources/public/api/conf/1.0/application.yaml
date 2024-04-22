@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: UKIM EORI Authorisaton Checker Reference Guide
+  title: UK Internal Market EORI Authorisaton Checker Reference Guide
   description: |
     This API allows Fast Parcel Operators (FPOs) and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
     The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
-    The API is based on REST principles with a single GET method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
+    The API is based on REST principles with a single POST method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
     Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
 
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
@@ -18,24 +18,22 @@ servers:
     description: |
       URL for the Live Environment
 tags:
-  - name: Endpoint
   - name: Authorisations
     description: |
-      UKIM Authorisation Status on EORI holders
 paths:
   /customs/uk-internal-market/authorisations:
-    get:
+    post:
       tags:
-        - Authorisations
+        - Endpoint for Authorisations
       summary: |
         Request Authorisation Status for user provided EORIs
       description: |
-        Using this method you can request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
+        Use this method to request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
+        
         There are two string query header parameters - eoris and date.  
         
-        Request Example: 
         
-        curl --location GET 'https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations?date=31-02-2024&eoris=GB123123123123,GB123123123123,GB123123123123'
+        
       operationId: requestAuth
       parameters:
         - name: eoris
@@ -53,16 +51,30 @@ paths:
         - name: date
           in: query
           description: |
-            The date used to determine validity. If this field is empty, the date of submission is used. The format is DD-MM-YYYY.
-          example: 31-02-2024
+            The date used to determine validity. If this field is empty, the date of submission is used. The format is YYYY-MM-DD.
+          example: 2024-02-31
           required: false
           explode: true
           schema:
             type: string
+      requestBody:
+        description: | 
+          The payload of the API request. 
+          
+          Request Example:
+          
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations"   
+  
+                  
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request'
       responses:
         '200':
           description: |
-            Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean = 'true'. 
+            Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean 'true'. 
           content:
             application/json:
               schema:
@@ -99,6 +111,17 @@ components:
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
           scopes: { }
   schemas:
+    Request:
+      type: object
+      properties:
+        date:
+          type: string
+          example: 2024-02-31
+        eoris:
+          type: array
+          items:
+            type: string
+            example: GB123123123123s
     Authorisations:
       type: object
       properties:
