@@ -6,9 +6,18 @@ The API is based on REST principles with a single POST method endpoint that retu
 ## Errors
 We use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:
 
-200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action
-400 to 499 if it failed because of a client error by your application
-500 to 599 if it failed because of an error on our server
+200 if it succeeded
+
+400 for Validation failure
+
+405 for Method not allowed
+        
+406 for Not acceptable
+
+429 for request in excess of rate limit
+          
+500 for Internal Server Error
+
 Errors specific to each API are shown in the Endpoints section, under Response. See our reference guide for more on errors.
 
 ## Testing
