@@ -1,4 +1,3 @@
-## Errors
 We use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:
 
 - 200 if it succeeded
