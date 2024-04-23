@@ -28,10 +28,8 @@ paths:
       summary: |
         Request Authorisation Status for user provided EORIs
       description: |
-        Use this method to request the UKIM Authorization Status of between 1 and 3000 EORIs. EORIs are taken as a Comma Separated List (CSV) and stored as a string type array . 
-        
-        There are two string body parameters - eoris and date.  
-        
+        Use this method to request the UKIM Authorization Status of between 1 and 3000 EORIs. 
+              
 
         
       operationId: requestAuth
@@ -60,21 +58,72 @@ paths:
         '400':
           description: |
             Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+          content:
+            application/json:
+              example: 
+                {
+                  "code": "INVALID_FORMAT",
+                  "message": "FR123123123123 is not a suported EORI number" 
+                }
+        '401':
+          description: "UNAUTHORISED Response"
+          content:
+            application/json:
+              example: 
+                {
+                  "code": "MISSING_CREDENTIALS",
+                  "message": "Authentication information is not provided"
+                }
         '403':
           description: |
             Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.
+          content:
+            application/json:
+              example: 
+                {
+                  "code": "FORBIDDEN",
+                  "message": "You are not allowed to access this resource"
+                }
         '405':
           description: |
-            Method not allowed. The request method is known by the server but is not supported by the target resource. 
+            Method not allowed
+          content:
+            application/json:
+              example: 
+                {
+                  "code": " METHOD_NOT_ALLOWED", 
+                  "message": "This method is not supported"
+                }
         '406':
           description: |
             Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent.
+          content:
+            application/json:
+              example: 
+                {
+                  "code": " NOT_ACCEPTABLE",
+                  "message": "Cannot produce an acceptable response"
+                }
         '429':
           description: |
             Request in excess of rate limit. The user has sent too many requests in a given amount of time.
+          content:
+            application/json:
+              example: 
+                {
+                  "code": "RATE_LIMIT_VIOLATION",
+                  "message": "Request count from application in excess of rate limit "
+                }
         '500':
           description: |
             Internal Server Error. The server has encountered a situation it does not know how to handle.
+          content:
+            application/json:
+              example: 
+                {
+                  "code": "INTERNAL_SERVER_ERROR",
+                  "message": "Unexpected internal issue"
+                } 
       security:
         - applicationRestricted: []
 components:
