@@ -32,31 +32,9 @@ paths:
         
         There are two string body parameters - eoris and date.  
         
-        
+
         
       operationId: requestAuth
-      parameters:
-        - name: eoris
-          in: header
-          description: |
-            Input supplied by the user as a string array of comma-seperated EORI Numbers.
-          example:
-            GB777777777777, XI123456789123
-          required: true
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
-        - name: date
-          in: header
-          description: |
-            The date used to determine validity. If this field is empty, the date of submission is used. The format is YYYY-MM-DD.
-          example: 2024-02-31
-          required: false
-          explode: true
-          schema:
-            type: string
       requestBody:
         description: | 
           The payload of the API request. 
@@ -98,7 +76,7 @@ paths:
           description: |
             Internal Server Error. The server has encountered a situation it does not know how to handle.
       security:
-        - { }
+        - applicationRestricted: []
 components:
   securitySchemes:
     applicationRestricted:
