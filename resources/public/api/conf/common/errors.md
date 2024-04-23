@@ -13,3 +13,5 @@ We use standard HTTP status codes to show whether an API request succeeded or no
 - 500 for Internal Server Error
 
 Errors specific to each API are shown in the Endpoints section, under Response. See our reference guide for more on errors.
+
+
