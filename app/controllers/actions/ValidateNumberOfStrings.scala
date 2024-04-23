@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package services
+package controllers.actions
 
-import models.Outcome.{Authorised, InvalidFormat}
-import models.{Eori, ErrorState, Outcome}
+import models.ErrorState
+import play.api.mvc.Results.BadRequest
 
-import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
-class EoriValidatorService(implicit ec: ExecutionContext) {
-  def validateEoriString(preValidationEoriString: String, onDate: LocalDate): Future[Outcome] = Future {
-    preValidationEoriString match {
-      case Eori.Regex(_) =>
-        //TODO - Want an Either to be returned, left being aggregate failure, right being lookup result
-        // TODO - auth lookup
-        Authorised(Eori(preValidationEoriString))
-      case _ => InvalidFormat(preValidationEoriString)
+import play.api.mvc._
+
+ class ValidateNumberOfStrings(implicit val executionContext: ExecutionContext) extends ActionFilter[Request] {
+
+   override def filter[A](request: Request[A]): Future[Option[Result]] = Future.successful {
+    val eoris = request.queryString.get("eoris").flatMap(_.headOption).getOrElse("")
+    if (eoris.split(",").length > 3000) {
+      Some(BadRequest(ErrorState.NumberOfStringsExceeded.errorMessage))
+    } else {
+      None
     }
   }
-}
+
+ }

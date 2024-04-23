@@ -16,8 +16,9 @@
 
 package controllers
 
+import controllers.actions.ValidateNumberOfStrings
 import models.Outcome.{Authorised, InvalidFormat, Unauthorised}
-import models.{InvalidFormattedEoris, Outcome, ValidateEorisResponse}
+import models.{ErrorState, InvalidFormattedEoris, Outcome, ValidateEorisResponse}
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -28,33 +29,37 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class EoriController @Inject()(cc: ControllerComponents, eoriValidatorService: EoriValidatorService, clock: Clock)(implicit ec: ExecutionContext)
+class EoriController @Inject()(cc: ControllerComponents,
+                               eoriValidatorService: EoriValidatorService,
+                               clock: Clock,
+                               validateNumberOfStrings: ValidateNumberOfStrings)
+                              (implicit ec: ExecutionContext)
   extends BackendController(cc) {
 
-  def validateEoris(eoris: Vector[String], inputDate: Option[LocalDate] = None): Action[AnyContent]  = Action.async  { _ =>
-    if (eoris.length > 3000) {
-      Future.successful(BadRequest("Number of strings exceeded; submit 3000 or less"))
-    } else {
-      val authorisedOn: LocalDate = inputDate.getOrElse(clock.instant().atOffset(ZoneOffset.UTC).toLocalDate)
+  def validateEoris(inputDate: Option[LocalDate] = None): Action[AnyContent] =
+    Action.andThen(validateNumberOfStrings).async { implicit request =>
+      request.queryString.get("eoris").flatMap(_.headOption).filter(_.nonEmpty).fold(Future.successful(BadRequest("Empty string detected"))) { massiveString =>
 
-      val futureOutcomes: Future[Vector[Outcome]] = Future.traverse(eoris)(eori => eoriValidatorService.validateEoriString(eori, authorisedOn))
+        val authorisedOn: LocalDate = inputDate.getOrElse(clock.instant().atOffset(ZoneOffset.UTC).toLocalDate)
 
-      futureOutcomes.map { outcomes =>
-        val (invalidOutcomes: Vector[InvalidFormat], validOutcomes: Vector[Outcome.Success]) = outcomes.partitionMap {
-          case authed @ Authorised(_) => Right(authed)
-          case unauthed @ Unauthorised(_) => Right(unauthed)
-          case invalidFormatting @ InvalidFormat(_) => Left(invalidFormatting)
-        }
+        val futureOutcomes: Future[Vector[Outcome]] = Future.traverse(massiveString.split(",").toVector)(eori => eoriValidatorService.validateEoriString(eori, authorisedOn))
 
-        if (invalidOutcomes.isEmpty) {
-          import models.ValidateEorisResponse.ValidateEorisResponseWrites
-          Ok(Json.toJson(ValidateEorisResponse(authorisedOn, validOutcomes)))
-        } else {
-          import models.InvalidFormattedEoris.InvalidFormattedEorisWrites
-          BadRequest(Json.toJson(InvalidFormattedEoris(invalidOutcomes.map(_.value))))
+        futureOutcomes.map { outcomes =>
+          val (invalidOutcomes: Vector[InvalidFormat], validOutcomes: Vector[Outcome.Success]) = outcomes.partitionMap {
+            case authed@Authorised(_) => Right(authed)
+            case unauthed@Unauthorised(_) => Right(unauthed)
+            case invalidFormatting@InvalidFormat(_) => Left(invalidFormatting)
+          }
+
+          (invalidOutcomes, validOutcomes) match {
+            case (invalid, valid) if invalid.nonEmpty && valid.isEmpty => BadRequest(ErrorState.InvalidFormat.errorMessage)
+            case (invalid, valid) if invalid.nonEmpty && valid.nonEmpty => BadRequest(ErrorState.PartialInvalidFormat.errorMessage)
+            case _ =>
+              import models.ValidateEorisResponse.ValidateEorisResponseWrites
+              Ok(Json.toJson(ValidateEorisResponse(authorisedOn, validOutcomes)))
+          }
         }
       }
     }
-  }
 }
 
