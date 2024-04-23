@@ -2,7 +2,7 @@
   "scopes": [
   ],
   "api": {
-    "name": "UKIM Auth Checker API",
+    "name": "UK Internal Market Authorisation Checker",
     "description": "The public-facing API to allow FPOs to request information on UKIM authorisations for the holders of EORI numbers",
     "context": "customs/uk-internal-market",
     "categories": ["CUSTOMS"],
