@@ -91,7 +91,7 @@ paths:
             application/json:
               example: 
                 {
-                  "code": " METHOD_NOT_ALLOWED", 
+                  "code": "METHOD_NOT_ALLOWED", 
                   "message": "This method is not supported"
                 }
         '406':
@@ -101,7 +101,7 @@ paths:
             application/json:
               example: 
                 {
-                  "code": " NOT_ACCEPTABLE",
+                  "code": "NOT_ACCEPTABLE",
                   "message": "Cannot produce an acceptable response"
                 }
         '429':
@@ -112,7 +112,7 @@ paths:
               example: 
                 {
                   "code": "RATE_LIMIT_VIOLATION",
-                  "message": "Request count from application in excess of rate limit "
+                  "message": "Request count from application in excess of rate limit"
                 }
         '500':
           description: |
@@ -148,7 +148,7 @@ components:
           type: array
           items:
             type: string
-            example: GB123123123123s
+            example: GB123123123333
     Authorisations:
       type: object
       properties:
