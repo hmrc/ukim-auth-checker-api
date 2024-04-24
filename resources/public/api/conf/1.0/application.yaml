@@ -148,7 +148,7 @@ components:
           type: array
           items:
             type: string
-            example: GB123123123123
+            example: GB123123123333
     Authorisations:
       type: object
       properties:
