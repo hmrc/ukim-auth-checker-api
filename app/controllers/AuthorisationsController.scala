@@ -16,36 +16,14 @@
 
 package uk.gov.hmrc.ukimauthcheckerapi.controllers
 
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json._
+import models.AuthorisationRequest
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton()
 class AuthorisationsController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
-  def authorisations: Action[JsValue] = Action(parse.json) { request =>
-    val requestBody = request.body
-
-    val reads: Reads[(List[String], Option[LocalDate])] = (
-      (__ \ "eoris").read[List[String]] and
-        (__ \ "date").readNullable[String].map(_.map(LocalDate.parse))
-      ).tupled
-
-    val result = requestBody.validate(reads)
-
-    result.fold(
-      errors => BadRequest(Json.obj("message" -> "Invalid JSON format")),
-      {
-        case (eoris, Some(date)) => {
-          Ok
-        }
-        case (eoris, None) => {
-          Ok
-        }
-      }
-    )
+  def authorisations: Action[AuthorisationRequest] = Action(parse.json[AuthorisationRequest]) { request =>
+    Ok
   }
 }
