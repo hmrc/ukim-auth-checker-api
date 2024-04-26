@@ -54,7 +54,6 @@ class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with
       forAll(authorisationRequestWithDate) { authRequest =>
         val request = FakeRequest().withBody(authRequest)
         val result: Future[Result] = controller.authorisations(request)
-        println("AUTH REQUEST " + authRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe empty
       }
