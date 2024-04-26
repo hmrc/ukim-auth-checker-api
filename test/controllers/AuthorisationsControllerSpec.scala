@@ -42,6 +42,7 @@ import play.api.test.Helpers._
 import play.api.test._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting with TestCommonGenerators with ScalaCheckPropertyChecks {
@@ -50,8 +51,9 @@ class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with
   "AuthorisationsController" should {
 
     "return 200 OK with empty body for valid JSON request with date populated" in {
-      forAll(authorisationRequestWithDate) { authRequest =>
-        val request = FakeRequest().withBody(authRequest)
+      forAll { authRequest: AuthorisationRequest =>
+        val authRequestWithDate = authRequest.copy(date = Some(LocalDate.now()))
+        val request = FakeRequest().withBody(authRequestWithDate)
         val result: Future[Result] = controller.authorisations(request)
         status(result) mustBe OK
         contentAsString(result) mustBe empty
@@ -59,8 +61,9 @@ class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with
     }
 
     "return 200 OK when no date is provided with empty body for valid JSON request" in {
-      forAll(authorisationRequestGenWithoutDate) { authRequest: AuthorisationRequest =>
-        val request = FakeRequest().withBody(authRequest)
+      forAll { authRequest: AuthorisationRequest =>
+        val authRequestWithoutDate = authRequest.copy(date = None)
+        val request = FakeRequest().withBody(authRequestWithoutDate)
         val result: Future[Result] = controller.authorisations(request)
 
         status(result) mustBe OK

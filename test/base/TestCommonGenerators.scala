@@ -26,17 +26,11 @@ trait TestCommonGenerators {
   lazy val eoriGen: Gen[Eori] =     Gen.alphaNumStr.map(Eori(_))
   lazy val eorisGen: Gen[Seq[Eori]] = Gen.listOfN(3000, eoriGen)
 
-  lazy val authorisationRequestWithDate: Gen[AuthorisationRequest] = for {
+  lazy val authorisationRequestGen: Gen[AuthorisationRequest] = for {
     eoris <- eorisGen
     now = LocalDate.now()
-    date <- Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS))
-  } yield AuthorisationRequest(eoris, Some(date))
-
-  lazy val authorisationRequestGenWithoutDate: Gen[AuthorisationRequest] = for {
-    eoris <- eorisGen
-  } yield AuthorisationRequest(eoris, None)
-
-  lazy val authorisationRequestGen: Gen[AuthorisationRequest] = Gen.oneOf(authorisationRequestWithDate, authorisationRequestGenWithoutDate)
+    date <- Gen.option(Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS)))
+  } yield AuthorisationRequest(eoris, date)
 
   implicit lazy val arbitraryAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary(authorisationRequestGen)
 

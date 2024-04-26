@@ -16,15 +16,9 @@
 
 package models
 
-import play.api.libs.json.{Format, Json, Writes}
-
-import scala.util.matching.Regex
-
+import play.api.libs.json.{Format, Json}
 case class Eori(value: String) extends AnyVal
 
 object Eori {
-  val Regex: Regex = "^(GB|XI)\\d{12}$".r
   implicit lazy val format: Format[Eori] = Json.valueFormat[Eori]
-
-  implicit val writes: Writes[Eori] = implicitly[Writes[String]].contramap(_.value)
 }
