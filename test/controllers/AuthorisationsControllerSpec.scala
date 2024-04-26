@@ -37,7 +37,6 @@ import models.AuthorisationRequest
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
