@@ -1,0 +1,100 @@
+{
+  "name": "ukim-auth-checker-api",
+  "version": "1",
+  "items": [
+    {
+      "type": "json",
+      "name": "bruno",
+      "seq": 1
+    },
+    {
+      "type": "http",
+      "name": "authorisations - Happy path - Date provided",
+      "seq": 3,
+      "request": {
+        "url": "{{url}}/authorisations",
+        "method": "POST",
+        "headers": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n\"Invalid JSON\": \"INvalid lol\"\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "auth": {
+          "mode": "none",
+          "basic": {
+            "username": "",
+            "password": ""
+          },
+          "bearer": {
+            "token": ""
+          }
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "query": []
+      }
+    },
+    {
+      "type": "http",
+      "name": "authorisations - Happy path - No date provided",
+      "seq": 3,
+      "request": {
+        "url": "{{url}}/authorisations",
+        "method": "POST",
+        "headers": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"eoris\": [\"GB77777777777\", \"XI123123123123\"]\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "auth": {
+          "mode": "none",
+          "basic": {
+            "username": "",
+            "password": ""
+          },
+          "bearer": {
+            "token": ""
+          }
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "query": []
+      }
+    }
+  ],
+  "activeEnvironmentUid": "avrDBHWUBxbJSOcXyvwzY",
+  "environments": [
+    {
+      "variables": [
+        {
+          "name": "url",
+          "value": "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        }
+      ],
+      "name": "External Test"
+    },
+    {
+      "variables": [
+        {
+          "name": "url",
+          "value": "http://localhost:9000",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        }
+      ],
+      "name": "local"
+    }
+  ]
+}
