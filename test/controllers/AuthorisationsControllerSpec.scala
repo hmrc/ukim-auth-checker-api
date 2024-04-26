@@ -37,10 +37,12 @@ import models.AuthorisationRequest
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
+
 import scala.concurrent.Future
 
 class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting with TestCommonGenerators with ScalaCheckPropertyChecks {
@@ -52,7 +54,7 @@ class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with
       forAll(authorisationRequestWithDate) { authRequest =>
         val request = FakeRequest().withBody(authRequest)
         val result: Future[Result] = controller.authorisations(request)
-
+        println("AUTH REQUEST " + authRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe empty
       }
@@ -67,6 +69,7 @@ class AuthorisationsControllerSpec extends PlaySpec with GuiceOneAppPerTest with
         contentAsString(result) mustBe empty
       }
     }
+
   }
 }
 

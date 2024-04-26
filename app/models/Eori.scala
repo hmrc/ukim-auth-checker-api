@@ -16,14 +16,15 @@
 
 package models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import play.api.libs.json.{Format, Json, Writes}
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import scala.util.matching.Regex
 
-case class AuthorisationRequest(eoris: Seq[Eori], date: Option[LocalDate])
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+case class Eori(value: String) extends AnyVal
 
+object Eori {
+  val Regex: Regex = "^(GB|XI)\\d{12}$".r
+  implicit lazy val format: Format[Eori] = Json.valueFormat[Eori]
+
+  implicit val writes: Writes[Eori] = implicitly[Writes[String]].contramap(_.value)
 }

@@ -16,15 +16,15 @@
 
 package base
 
-import models.AuthorisationRequest
+import models.{AuthorisationRequest, Eori}
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 trait TestCommonGenerators {
-  lazy val eoriGen: Gen[String] = Gen.alphaNumStr
-  lazy val eorisGen: Gen[List[String]] = Gen.listOfN(3000, eoriGen)
+  lazy val eoriGen: Gen[Eori] =     Gen.alphaNumStr.map(Eori(_))
+  lazy val eorisGen: Gen[Seq[Eori]] = Gen.listOfN(3000, eoriGen)
 
   lazy val authorisationRequestWithDate: Gen[AuthorisationRequest] = for {
     eoris <- eorisGen
