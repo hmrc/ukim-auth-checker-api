@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.ukimauthcheckerapi.controllers
 
+import models.AuthorisationRequest
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
-
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
+class AuthorisationsController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+  def authorisations: Action[AuthorisationRequest] = Action(parse.json[AuthorisationRequest]) { request =>
+    Ok
   }
 }
