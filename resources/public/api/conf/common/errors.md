@@ -3,6 +3,8 @@ We use standard HTTP status codes to show whether an API request succeeded or no
 - 200 if it succeeded
 
 - 400 for Validation failure
+  
+- 401 for Authorisation failure
 
 - 405 for Method not allowed
         
