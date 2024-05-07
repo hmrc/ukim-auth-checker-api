@@ -3,7 +3,7 @@
   "version": "1",
   "items": [
     {
-      "type": "http",
+      "type": "http-request",
       "name": "authorisations - Happy path - Date provided",
       "seq": 3,
       "request": {
@@ -30,11 +30,11 @@
         "vars": {},
         "assertions": [],
         "tests": "",
-        "query": []
+        "params": []
       }
     },
     {
-      "type": "http",
+      "type": "http-request",
       "name": "authorisations - Happy path - No date provided",
       "seq": 3,
       "request": {
@@ -61,13 +61,8 @@
         "vars": {},
         "assertions": [],
         "tests": "",
-        "query": []
+        "params": []
       }
-    },
-    {
-      "type": "json",
-      "name": "bruno",
-      "seq": 1
     }
   ],
   "activeEnvironmentUid": "GvxT8E56UftdT4A1kxsh8",
