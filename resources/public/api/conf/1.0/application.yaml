@@ -2,10 +2,10 @@ openapi: 3.0.3
 info:
   title: UK Internal Market EORI Authorisaton Checker Reference Guide
   description: |
-    This API allows Fast Parcel Operators (FPOs), software developers and 3rd party users to check if the holders of provided EORI Numbers have a valid UKIM authorisation.
+    This API allows Fast Parcel Operators (FPOs), software developers and 3rd party software users to check if the holders of provided EORI Numbers have a valid UKIMS authorisation.
     The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
     The API is based on REST principles with a single POST method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
-    Use the API to request the UKIM Authorization Status of between 1 to 3000 EORIs passed as an array. 
+    Use the API to request the UKIMS Authorization Status of between 1 to 3000 EORIs passed as an array. 
 
     Note: The API endpoint relates only to Great Britain and Northern Ireland.
   contact: {}
@@ -28,7 +28,7 @@ paths:
       summary: |
         Request Authorisation Status for user provided EORIs
       description: |
-        Use this method to request the UKIM Authorization Status of between 1 and 3000 EORIs. 
+        Use this method to request the UKIMS Authorization Status of between 1 and 3000 EORIs. 
               
 
         
@@ -66,7 +66,7 @@ paths:
                   "message": "FR123123123123 is not a suported EORI number" 
                 }
         '401':
-          description: "UNAUTHORISED Response"
+          description: "Authentication failure. Typically generated when authentication information is not provided, possibly by omitting a bearer token."
           content:
             application/json:
               example: 
@@ -86,7 +86,7 @@ paths:
                 }
         '405':
           description: |
-            Method not allowed
+            Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https.
           content:
             application/json:
               example: 
