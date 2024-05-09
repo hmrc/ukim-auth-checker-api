@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: UK Internal Market Scheme (UKIMS) EORI Authorisaton Checker Reference Guide
+  title: UK Internal Market Scheme (UKIMS) EORI Authorisaton Checker API Reference Guide
   description: |
-    This API allows Fast Parcel Operators (FPOs), software developers and 3rd party software users to check if the holders of provided EORI Numbers have a valid UKIMS authorisation.
+    This API allows Fast Parcel Operators (FPOs), software developers and third party software users to check if the holders of provided EORI Numbers have a valid UKIMS authorisation.
     The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
     The API is based on REST principles with a single POST method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
     Use the API to request the UKIMS Authorization Status of between 1 to 3000 EORIs passed as an array. 
@@ -57,7 +57,13 @@ paths:
                 $ref: '#/components/schemas/Authorisations'
         '400':
           description: |
-            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error. Possible causes could be:
+            
+            <ul>
+              <li>unsupported country code in EORI (GB and XI are supported)</li>
+              <li>invalid format for EORI number</li>
+              <li>invalid format for date</li>
+            </ul>
           content:
             application/json:
               example: 
@@ -66,7 +72,8 @@ paths:
                   "message": "FR123123123123 is not a suported EORI number" 
                 }
         '401':
-          description: "Authentication failure. Typically generated when authentication information is not provided, possibly by omitting a bearer token."
+          description: |
+            Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
           content:
             application/json:
               example: 
@@ -76,7 +83,12 @@ paths:
                 }
         '403':
           description: |
-            Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.
+            Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. Other possible causes could be:
+
+            <ul>
+              <li>Authentication token expired</li>
+              <li>Missing authentication token</li>
+            </ul>
           content:
             application/json:
               example: 
@@ -86,7 +98,7 @@ paths:
                 }
         '405':
           description: |
-            Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https.
+            Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https. 
           content:
             application/json:
               example: 
@@ -96,7 +108,11 @@ paths:
                 }
         '406':
           description: |
-            Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent.
+            Not acceptable. This response is sent when the incoming request desires an accept header for a content we cannot support. Primary way to fix 406 errors is as follows:
+            <ul>
+              <li>check Accept header</li>
+              <li>check Request and Response headers</li>
+            </ul>
           content:
             application/json:
               example: 
