@@ -57,14 +57,12 @@ paths:
                 $ref: '#/components/schemas/Authorisations'
         '400':
           description: |
-            Validation failure. "The server cannot or will not process the request due to something that is perceived to be a client error. Other possible causes could be:
+            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error. Possible causes could be:
             
             <ul>
-              (li>malformed URL request syntax</li>
-              <li>a DNS lookup cache</li>
-              <li>file size too large</li>
-              <li>invalid request message framing</li>
-              <li>deceptive request routing</li>
+              <li>unsupported country code in EORI (GB and XI are supported)</li>
+              <li>invalid format for EORI number</li>
+              <li>invalid format for date</li>
             </ul>
           content:
             application/json:
@@ -75,12 +73,7 @@ paths:
                 }
         '401':
           description: |
-            Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token. Other possible causes could be:
-
-            <ul>
-              (li>malformed URL or outdated link</li>
-              <li>outdated browser cache</li>
-            </ul>
+            Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
           content:
             application/json:
               example: 
@@ -93,7 +86,7 @@ paths:
             Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. Other possible causes could be:
 
             <ul>
-              (li>Authentication token expired</li>
+              <li>Authentication token expired</li>
               <li>Missing authentication token</li>
             </ul>
           content:
@@ -115,9 +108,9 @@ paths:
                 }
         '406':
           description: |
-            Not acceptable. This response is sent when the web server, after performing server-driven content negotiation, doesn't find any content that conforms to the criteria given by the user agent. Primary way to fix 406 errors is as follows:
+            Not acceptable. This response is sent when the incoming request desires an accept header for a content we cannot support. Primary way to fix 406 errors is as follows:
             <ul>
-              (li>check Accept header</li>
+              <li>check Accept header</li>
               <li>check Request and Response headers</li>
             </ul>
           content:
