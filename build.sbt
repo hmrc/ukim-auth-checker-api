@@ -13,8 +13,7 @@ lazy val microservice = Project("ukim-auth-checker-api", file("."))
     scalacOptions += "-Wconf:src=routes/.*:s",
     PlayKeys.playDefaultPort := 10160,
     resolvers += Resolver.jcenterRepo, // Keep the existing resolver
-    resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
-    libraryDependencies += "uk.gov.hmrc" %% "auth-client-play-29" % "8.0.0"
+    resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2")
   )
   .settings(CodeCoverageSettings.settings: _*)
   .settings(
