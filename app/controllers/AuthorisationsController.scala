@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.ukimauthcheckerapi.controllers
 
-import models.AuthorisationRequest
+import models.{AuthorisationRequest, ErrorMessage}
 import play.api.mvc.{Action, ControllerComponents}
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.AuthProvider.StandardApplication
 import uk.gov.hmrc.auth.core.AuthProviders
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -33,14 +34,13 @@ class AuthorisationsController @Inject()(
 ) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions  {
 
   def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
-    authorised(AuthProviders(GovernmentGateway)).retrieve(Retrievals.allEnrolments) {
-      case enrolments =>
+    authorised(AuthProviders(StandardApplication)) {
         Future.successful(Ok)
     } recover {
       case ex: NoActiveSession =>
-        Unauthorized("No active session")
+        Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))
       case ex: AuthorisationException =>
-        Forbidden("You are not authorized to access this resource")
+        Forbidden(Json.toJson((ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))))
     }
   }
 }

@@ -18,17 +18,19 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import org.mockito.ArgumentMatchers.any
-import play.api.mvc.{ControllerComponents, Results}
+import play.api.mvc.{ControllerComponents, Result, Results}
 import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
-import models.{AuthorisationRequest, Eori}
+import models.{AuthorisationRequest, ErrorMessage, Eori}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.auth.core.authorise.Predicate
 
 class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with Results {
 
@@ -42,15 +44,16 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
   "AuthorisationsController" should {
 
     "return OK when user is authorised" in new Setup {
-      val enrolments = Enrolments(Set(Enrolment("enrolmentKey")))
-      when(mockAuthConnector.authorise(any(), any())(any(), any()))
-        .thenReturn(Future.successful(enrolments))
+    when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+        .thenReturn(Future.successful(()))
 
       val request = FakeRequest().withBody(AuthorisationRequest(Seq(Eori("test-eori")), None))
 
-      val result = controller.authorisations()(request)
+      val actionResult: Future[Result] = controller.authorisations()(request)
+      
+      val result: Result = Helpers.await(actionResult)
 
-      status(result) shouldBe OK
+      status(actionResult) shouldBe OK
     }
 
     "return Unauthorized when there is no active session" in new Setup {
@@ -62,7 +65,7 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       val result = controller.authorisations()(request)
 
       status(result) shouldBe UNAUTHORIZED
-      contentAsString(result) shouldBe "No active session"
+      contentAsString(result) shouldBe Json.toJson(ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided")).toString
     }
 
     "return Forbidden when user is not authorised" in new Setup {
@@ -74,7 +77,7 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       val result = controller.authorisations()(request)
 
       status(result) shouldBe FORBIDDEN
-      contentAsString(result) shouldBe "You are not authorized to access this resource"
+      contentAsString(result) shouldBe Json.toJson(ErrorMessage("FORBIDDEN", "You are not allowed to access this resource")).toString
     }
   }
 }
