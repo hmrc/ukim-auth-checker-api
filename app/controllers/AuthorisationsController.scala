@@ -20,8 +20,6 @@ import models.{AuthorisationRequest, ErrorMessage}
 import play.api.mvc.{Action, ControllerComponents}
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.auth.core.AuthProvider.StandardApplication
-import uk.gov.hmrc.auth.core.AuthProviders
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import javax.inject.{Inject, Singleton}
@@ -34,7 +32,7 @@ class AuthorisationsController @Inject()(
 ) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions  {
 
   def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
-    authorised(AuthProviders(StandardApplication)) {
+    authorised() {
         Future.successful(Ok)
     } recover {
       case ex: NoActiveSession =>
