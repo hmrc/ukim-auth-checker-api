@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import connectors.PdsAuthCheckerConnector
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
@@ -25,35 +26,64 @@ import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
-import models.{AuthorisationRequest, ErrorMessage, Eori}
+import models.{AuthorisationRequest, Eori, ErrorMessage, PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult}
+import org.scalatest.concurrent.Futures.whenReady
+import services.ConverterService
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 
+import java.time.LocalDate
+
 class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with Results {
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockPdsConnector: PdsAuthCheckerConnector = mock[PdsAuthCheckerConnector]
+    val mockConverterService: ConverterService = mock[ConverterService]
     val controllerComponents: ControllerComponents = Helpers.stubControllerComponents()
-    val controller = new AuthorisationsController(controllerComponents, mockAuthConnector)
+    val controller = new AuthorisationsController(controllerComponents, mockAuthConnector, mockPdsConnector, mockConverterService)
     
   }
 
+  val response =
+    PdsAuthCheckerResponse(
+      LocalDate.of(2024,1,1),
+      "UKIM",
+      Seq(
+        PdsAuthCheckerResult(Eori("GB123456123456"), true, 0),
+        PdsAuthCheckerResult(Eori("XI123123123123"), false, 2)
+      ))
+
+  val converted =
+    UKIMAuthCheckerResponse(
+      LocalDate.of(2024, 1, 1),
+      Seq(
+        UKIMAuthCheckerResult(Eori("GB123456123456"), true),
+        UKIMAuthCheckerResult(Eori("XI123123123123"), false)
+      )
+    )
+
+
   "AuthorisationsController" should {
 
-    "return OK when user is authorised" in new Setup {
-    when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+    "return OK when authorised and response received from PdsAuthChecker" in new Setup {
+      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
         .thenReturn(Future.successful(()))
+      when(mockPdsConnector.check(any())(any(), any()))
+        .thenReturn(Future.successful(response))
+      when(mockConverterService.convert(any[PdsAuthCheckerResponse]))
+        .thenReturn(converted)
 
       val request = FakeRequest().withBody(AuthorisationRequest(Seq(Eori("test-eori")), None))
 
-      val actionResult: Future[Result] = controller.authorisations()(request)
-      
-      val result: Result = Helpers.await(actionResult)
+      val result: Future[Result] = controller.authorisations()(request)
 
-      status(actionResult) shouldBe OK
+      status(result) shouldBe OK
+      contentAsJson(result) shouldBe Json.toJson(converted)
     }
 
     "return Unauthorized when there is no active session" in new Setup {

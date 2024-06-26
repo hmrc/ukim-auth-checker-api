@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ukimauthcheckerapi.config
+package models
 
-import config.UKIMSServicesConfig
-import io.lemonlabs.uri.Url
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import java.time.{LocalDate, LocalDateTime}
 
-@Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: UKIMSServicesConfig) {
+case class PdsAuthCheckerResponse(processingDate: LocalDate, authType: String, results: Seq[PdsAuthCheckerResult])
 
-  val appName: String = config.get[String]("appName")
+object PdsAuthCheckerResponse {
+  implicit val format: OFormat[PdsAuthCheckerResponse] = Json.format[PdsAuthCheckerResponse]
+}
 
-  val pdsAuthCheckerUrl = Url.parse(servicesConfig.baseUrl("pds-auth-checker-api"))
+case class PdsAuthCheckerResult(eori: Eori, valid: Boolean, code: Int)
+
+object PdsAuthCheckerResult {
+  implicit val format: OFormat[PdsAuthCheckerResult] = Json.format[PdsAuthCheckerResult]
 }
