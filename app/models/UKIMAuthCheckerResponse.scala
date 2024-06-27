@@ -18,9 +18,9 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
-case class UKIMAuthCheckerResponse(date: LocalDate, results: Seq[UKIMAuthCheckerResult])
+case class UKIMAuthCheckerResponse(date: LocalDate, eoris: Seq[UKIMAuthCheckerResult])
 
 object UKIMAuthCheckerResponse {
   implicit val format: OFormat[UKIMAuthCheckerResponse] = Json.format[UKIMAuthCheckerResponse]
