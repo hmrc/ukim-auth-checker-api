@@ -17,23 +17,30 @@
 package uk.gov.hmrc.ukimauthcheckerapi.controllers
 
 import models.{AuthorisationRequest, ErrorMessage}
+import connectors.PdsAuthCheckerConnector
 import play.api.mvc.{Action, ControllerComponents}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
+import services.ConverterService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class AuthorisationsController @Inject()(
   cc: ControllerComponents,
-  val authConnector: AuthConnector
+  val authConnector: AuthConnector,
+  pdsAuthCheckerConnector: PdsAuthCheckerConnector,
+  converterService: ConverterService
 ) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions  {
 
   def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
     authorised() {
-        Future.successful(Ok)
+      pdsAuthCheckerConnector.check(request.body).map {
+        res =>
+          Ok(Json.toJson(converterService.convert(res)))
+      }
     } recover {
       case ex: NoActiveSession =>
         Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))

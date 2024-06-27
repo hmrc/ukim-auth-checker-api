@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ukimauthcheckerapi.config
+package config
 
-import config.UKIMSServicesConfig
-import io.lemonlabs.uri.Url
-
-import javax.inject.{Inject, Singleton}
+import com.google.inject.Inject
 import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-@Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: UKIMSServicesConfig) {
+class UKIMSServicesConfig @Inject() (config: Configuration) extends ServicesConfig(config) {
 
-  val appName: String = config.get[String]("appName")
+  override def config(serviceName: String): Configuration = super.config(serviceName)
 
-  val pdsAuthCheckerUrl = Url.parse(servicesConfig.baseUrl("pds-auth-checker-api"))
 }

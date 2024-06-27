@@ -16,8 +16,9 @@
 
 package base
 
-import models.{AuthorisationRequest, Eori}
+import models.{AuthorisationRequest, Eori, PdsAuthCheckerResponse, PdsAuthCheckerResult}
 import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 
 import java.time.LocalDate
@@ -34,4 +35,19 @@ trait TestCommonGenerators {
 
   implicit lazy val arbitraryAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary(authorisationRequestGen)
 
+  implicit lazy val arbitraryPdsAuthCheckerResult: Arbitrary[PdsAuthCheckerResult] = Arbitrary {
+    for {
+      eori <- eoriGen
+      code <- Gen.oneOf(0, 1, 2)
+      valid = code == 0
+    } yield PdsAuthCheckerResult(eori, valid, code)
+  }
+
+  implicit lazy val arbitraryPdsAuthCheckerResponse: Arbitrary[PdsAuthCheckerResponse] = Arbitrary {
+    for {
+      results <- arbitrary[Seq[PdsAuthCheckerResult]]
+      date = LocalDate.of(2024, 1, 1)
+      authType = "UKIM"
+    } yield PdsAuthCheckerResponse(date, authType, results)
+  }
 }

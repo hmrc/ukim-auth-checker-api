@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ukimauthcheckerapi.config
+package models.errors
 
-import config.UKIMSServicesConfig
-import io.lemonlabs.uri.Url
+sealed trait PdsAuthError
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-
-@Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: UKIMSServicesConfig) {
-
-  val appName: String = config.get[String]("appName")
-
-  val pdsAuthCheckerUrl = Url.parse(servicesConfig.baseUrl("pds-auth-checker-api"))
+object PdsAuthError {
+  case class UnexpectedError(thr: Option[Throwable] = None)    extends PdsAuthError
 }
