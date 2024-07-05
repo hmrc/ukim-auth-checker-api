@@ -30,8 +30,6 @@ paths:
       description: |
         Use this method to request the UKIMS Authorization Status of between 1 and 3000 EORIs. 
               
-
-        
       operationId: requestAuth
       requestBody:
         description: | 
@@ -40,7 +38,6 @@ paths:
           Request Example:
           
           curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations"   
-  
                   
         required: true
         content:
@@ -160,11 +157,13 @@ components:
         date:
           type: string
           example: 2024-02-31
+          description: "The date and time that the message was originated (“in HTTP-date” format as defined by RFC 7231 Date/Time"
         eoris:
           type: array
           items:
             type: string
-            example: GB123123123333
+            example: GB123123123000
+            description: "There can be a maximum of 3000 EORI numbers in a request, a valid EORI must begin with GB or XI as country code"
     Authorisations:
       type: object
       properties:
@@ -178,7 +177,8 @@ components:
             properties:
               eori:
                 type: string
-                example: GB123123123123
+                example: GB123123123000
               authorised:
                 type: boolean
                 example: true
+                description: "true - EORI is authorised, false - EORI is not authorised"
