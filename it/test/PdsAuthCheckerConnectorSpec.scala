@@ -30,13 +30,14 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PdsAuthCheckerConnectorSpec extends AnyWordSpec
-  with Matchers
-  with ScalaFutures
-  with HttpClientV2Support
-  with TestCommonGenerators
-  with IntegrationPatience
-  with WireMockSupport {
+class PdsAuthCheckerConnectorSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with HttpClientV2Support
+    with TestCommonGenerators
+    with IntegrationPatience
+    with WireMockSupport {
 
   private val configuration = Configuration(
     "appName" -> "pds-auth-checker-api",
@@ -86,12 +87,14 @@ class PdsAuthCheckerConnectorSpec extends AnyWordSpec
           .check(authorisationRequestGen.sample.get)
           .futureValue
 
-        response shouldBe PdsAuthCheckerResponse(
-          LocalDate.of(2021, 1, 1),
-          "UKIM",
-          Seq(
-            PdsAuthCheckerResult(Eori("GB120000000999"), valid = false, 1),
-            PdsAuthCheckerResult(Eori("GB120001000919"), valid = true, 0)
+        response shouldBe Right(
+          PdsAuthCheckerResponse(
+            LocalDate.of(2021, 1, 1),
+            "UKIM",
+            Seq(
+              PdsAuthCheckerResult(Eori("GB120000000999"), valid = false, 1),
+              PdsAuthCheckerResult(Eori("GB120001000919"), valid = true, 0)
+            )
           )
         )
       }
@@ -119,8 +122,8 @@ class PdsAuthCheckerConnectorSpec extends AnyWordSpec
         val response = pdsConnector
           .check(authorisationRequestGen.sample.get)
 
-        whenReady(response.failed) {
-          r => r shouldBe a[Exception]
+        whenReady(response.failed) { r =>
+          r shouldBe a[Exception]
         }
 
       }
