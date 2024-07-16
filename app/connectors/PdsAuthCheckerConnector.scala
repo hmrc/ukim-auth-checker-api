@@ -77,7 +77,6 @@ class PdsAuthCheckerConnectorImpl @Inject() (
         }
       }
       .recoverWith { case badRequest: BadRequestException =>
-        println(badRequest)
         val responseBody = badRequest.getMessage
           .split("Response body '")
           .lastOption
