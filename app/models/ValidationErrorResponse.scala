@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package models.errors
+package models
 
-import play.api.libs.json.{JsError, JsString, JsSuccess, Json, Reads, Writes}
+import play.api.libs.json._
 
 case class ValidationErrorResponse(
-                                    code: AuthorisedBadRequestCode,
-                                    message: String,
-                                    validationErrors: Seq[ValidationError]
-                                  )
+    code: AuthorisedBadRequestCode,
+    message: String,
+    validationErrors: Seq[ValidationError]
+)
 
 sealed trait AuthorisedBadRequestCode
 
 object AuthorisedBadRequestCode {
-  private case object InvalidFormat extends AuthorisedBadRequestCode
+  case object InvalidFormat extends AuthorisedBadRequestCode
 
   implicit val writes: Writes[AuthorisedBadRequestCode] =
     implicitly[Writes[String]].contramap { case InvalidFormat =>
@@ -36,12 +36,13 @@ object AuthorisedBadRequestCode {
 
   implicit val reads: Reads[AuthorisedBadRequestCode] = Reads {
     case JsString("INVALID_FORMAT") => JsSuccess(InvalidFormat)
-    case _ => JsError("Unknown authorised bad request code")
+    case _                          => JsError("Unknown authorised bad request code")
   }
 }
 
 object ValidationErrorResponse {
-  implicit val reads: Reads[ValidationErrorResponse] = Json.reads[ValidationErrorResponse]
-  implicit val writes: Writes[ValidationErrorResponse] = Json.writes[ValidationErrorResponse]
+  implicit val reads: Reads[ValidationErrorResponse] =
+    Json.reads[ValidationErrorResponse]
+  implicit val writes: Writes[ValidationErrorResponse] =
+    Json.writes[ValidationErrorResponse]
 }
-

@@ -17,18 +17,13 @@
 package connectors
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
-import models.errors.ValidationErrorResponse
-import models.{
-  AuthorisationRequest,
-  PdsAuthCheckerRequest,
-  PdsAuthCheckerResponse
-}
-import play.api.http.Status.OK
+import models.{AuthorisationRequest, PdsAuthCheckerRequest, PdsAuthCheckerResponse, ValidationErrorResponse}
+import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsResult, Json}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{
-  BadRequestException,
   HeaderCarrier,
   HttpResponse,
   StringContextOps,
@@ -72,24 +67,13 @@ class PdsAuthCheckerConnectorImpl @Inject() (
               .validate[PdsAuthCheckerResponse]
               .map(result => Future.successful(Right(result)))
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
+          case BAD_REQUEST =>
+            response.json
+              .validate[ValidationErrorResponse]
+              .map(result => Future.successful(Left(result)))
+              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
           case _ =>
             Future.failed(UpstreamErrorResponse(response.body, response.status))
-        }
-      }
-      .recoverWith { case badRequest: BadRequestException =>
-        val responseBody = badRequest.getMessage
-          .split("Response body '")
-          .lastOption
-          .getOrElse("")
-          .stripSuffix("'")
-        try {
-          val responseParsed = Json.parse(responseBody)
-          responseParsed
-            .validate[ValidationErrorResponse]
-            .map(result => Future.successful(Left(result)))
-            .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-        } catch {
-          case e: Exception => Future.failed(e)
         }
       }
   }

@@ -28,12 +28,15 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
 import models.{
   AuthorisationRequest,
+  AuthorisedBadRequestCode,
   Eori,
+  EoriValidationError,
   ErrorMessage,
   PdsAuthCheckerResponse,
   PdsAuthCheckerResult,
   UKIMAuthCheckerResponse,
-  UKIMAuthCheckerResult
+  UKIMAuthCheckerResult,
+  ValidationErrorResponse
 }
 import services.ConverterService
 
@@ -149,6 +152,45 @@ class AuthorisationsControllerSpec
           )
         )
         .toString
+    }
+    "return Bad Request when incorrectly formatted request is submitted" in new Setup {
+      val errorResponse =
+        ValidationErrorResponse(
+          AuthorisedBadRequestCode.InvalidFormat,
+          "Input format for request data",
+          Seq(
+            EoriValidationError(
+              "GB12000000000111",
+              "Invalid Format: Too many digits"
+            )
+          )
+        )
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
+        .thenReturn(Future.successful(()))
+      when(mockPdsConnector.check(any())(any(), any()))
+        .thenReturn(Future.successful(Left(errorResponse)))
+      val request = FakeRequest().withBody(
+        AuthorisationRequest(Seq(Eori("test-eori")), None)
+      )
+
+      val result = controller.authorisations()(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe
+        Json
+          .obj(
+            "code" -> "INVALID_FORMAT",
+            "message" -> "Input format for request data",
+            "validationErrors" -> Json.arr(
+              Json.obj(
+                "eori" -> "GB12000000000111",
+                "validationError" -> "Invalid Format: Too many digits"
+              )
+            )
+          )
     }
   }
 }

@@ -17,7 +17,14 @@
 import base.TestCommonGenerators
 import config.UKIMSServicesConfig
 import connectors.PdsAuthCheckerConnectorImpl
-import models.{Eori, PdsAuthCheckerResponse, PdsAuthCheckerResult}
+import models.{
+  AuthorisedBadRequestCode,
+  Eori,
+  EoriValidationError,
+  PdsAuthCheckerResponse,
+  PdsAuthCheckerResult,
+  ValidationErrorResponse
+}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
