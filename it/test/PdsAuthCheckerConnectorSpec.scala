@@ -105,6 +105,42 @@ class PdsAuthCheckerConnectorSpec
           )
         )
       }
+      "return an error response with body for a validationError response from PdsAuthCheckerApi" in {
+        givenPdsReturns(
+          400,
+          pdsPath,
+          s"""{
+             |  "code": "INVALID_FORMAT",
+             |  "message": "Input format for request data",
+             |  "validationErrors": [
+             |    {
+             |      "eori": "GB1200000000122",
+             |      "validationError": "Invalid Format: Too many digits"
+             |    }
+             |  ]
+             |}""".stripMargin
+        )
+
+        val response = pdsConnector
+          .check(
+            authorisationRequestGen.sample.get
+              .copy(eoris = Seq(Eori("GB1200000000122")))
+          )
+          .futureValue
+
+        response shouldBe Left(
+          ValidationErrorResponse(
+            AuthorisedBadRequestCode.InvalidFormat,
+            "Input format for request data",
+            Seq(
+              EoriValidationError(
+                "GB1200000000122",
+                "Invalid Format: Too many digits"
+              )
+            )
+          )
+        )
+      }
       "return a failure with an exception if malformed body returned from PdsAuthCheckerApi" in {
         givenPdsReturns(
           200,

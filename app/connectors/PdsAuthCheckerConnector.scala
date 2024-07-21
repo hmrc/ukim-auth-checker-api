@@ -17,7 +17,12 @@
 package connectors
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
-import models.{AuthorisationRequest, PdsAuthCheckerRequest, PdsAuthCheckerResponse, ValidationErrorResponse}
+import models.{
+  AuthorisationRequest,
+  PdsAuthCheckerRequest,
+  PdsAuthCheckerResponse,
+  ValidationErrorResponse
+}
 import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsResult, Json}
@@ -55,7 +60,6 @@ class PdsAuthCheckerConnectorImpl @Inject() (
     val url = appConfig.pdsAuthCheckerUrl.addPathParts("authorisations")
     val pdsRequest =
       PdsAuthCheckerRequest(request.date, authType, request.eoris)
-
     httpClientV2
       .post(url"$url")
       .withBody(Json.toJson(pdsRequest))
