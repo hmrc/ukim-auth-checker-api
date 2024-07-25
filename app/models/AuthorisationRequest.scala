@@ -17,12 +17,9 @@
 package models
 
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-case class AuthorisationRequest(eoris: Seq[Eori], date: Option[LocalDate])
+case class AuthorisationRequest(eoris: Seq[Eori], date: Option[String])
 object AuthorisationRequest {
   implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
 

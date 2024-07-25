@@ -19,6 +19,7 @@ import config.UKIMSServicesConfig
 import connectors.PdsAuthCheckerConnectorImpl
 import models.{
   AuthorisedBadRequestCode,
+  DateValidationError,
   Eori,
   EoriValidationError,
   PdsAuthCheckerResponse,
@@ -64,7 +65,7 @@ class PdsAuthCheckerConnectorSpec
   private val pdsConnector =
     new PdsAuthCheckerConnectorImpl(httpClientV2, wiremockServerConfig)
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "PdsAuthCheckerConnector" when {
     "a request is made" should {
@@ -105,7 +106,7 @@ class PdsAuthCheckerConnectorSpec
           )
         )
       }
-      "return an error response with body for a validationError response from PdsAuthCheckerApi" in {
+      "return an error response with body for an EORI validationError response from PdsAuthCheckerApi" in {
         givenPdsReturns(
           400,
           pdsPath,
@@ -136,6 +137,42 @@ class PdsAuthCheckerConnectorSpec
               EoriValidationError(
                 "GB1200000000122",
                 "Invalid Format: Too many digits"
+              )
+            )
+          )
+        )
+      }
+      "return an error response with body for a date validationError response from PdsAuthCheckerApi" in {
+        givenPdsReturns(
+          400,
+          pdsPath,
+          s"""{
+             |  "code": "INVALID_FORMAT",
+             |  "message": "Input format for request data",
+             |  "validationErrors": [
+             |    {
+             |      "date": "2021-01-0A",
+             |      "validationError": "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
+             |    }
+             |  ]
+             |}""".stripMargin
+        )
+
+        val response = pdsConnector
+          .check(
+            authorisationRequestGen.sample.get
+              .copy(date = Some("2021-01-0A"))
+          )
+          .futureValue
+
+        response shouldBe Left(
+          ValidationErrorResponse(
+            AuthorisedBadRequestCode.InvalidFormat,
+            "Input format for request data",
+            Seq(
+              DateValidationError(
+                "2021-01-0A",
+                "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
               )
             )
           )
