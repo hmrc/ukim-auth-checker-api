@@ -27,7 +27,8 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
 import models.{AuthorisationRequest, Eori, ErrorMessage, PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult}
-import org.scalatest.concurrent.Futures.whenReady
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
 import services.ConverterService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,6 +40,9 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import java.time.LocalDate
 
 class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with Results {
+
+  implicit val sys = ActorSystem("Test")
+  implicit val mat = Materializer.matFromSystem
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -78,7 +82,7 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockConverterService.convert(any[PdsAuthCheckerResponse]))
         .thenReturn(converted)
 
-      val request = FakeRequest().withBody(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
 
       val result: Future[Result] = controller.authorisations()(request)
 
@@ -90,7 +94,7 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockAuthConnector.authorise(any(), any())(any(), any()))
         .thenReturn(Future.failed(new NoActiveSession("No active session") {}))
 
-      val request = FakeRequest().withBody(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
 
       val result = controller.authorisations()(request)
 
@@ -102,12 +106,36 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       when(mockAuthConnector.authorise(any(), any())(any(), any()))
         .thenReturn(Future.failed(new AuthorisationException("Forbidden") {}))
 
-      val request = FakeRequest().withBody(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
 
       val result = controller.authorisations()(request)
 
       status(result) shouldBe FORBIDDEN
-      contentAsString(result) shouldBe Json.toJson(ErrorMessage("FORBIDDEN", "You are not allowed to access this resource")).toString
+      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))
+    }
+
+    "return BadRequest when empty body provided" in new Setup {
+      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+        .thenReturn(Future.successful(()))
+
+      val request = FakeRequest().withBody(Json.toJson(""))
+
+      val result = controller.authorisations()(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("INVALID_PAYLOAD","Valid Payload Required"))
+    }
+
+    "return BadRequest when unsupported json provided" in new Setup {
+      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+        .thenReturn(Future.successful(()))
+
+      val request = FakeRequest().withBody(Json.obj("bees" -> 5))
+
+      val result = controller.authorisations()(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("INVALID_PAYLOAD","Valid Payload Required"))
     }
   }
 }

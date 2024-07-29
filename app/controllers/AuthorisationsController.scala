@@ -19,7 +19,7 @@ package uk.gov.hmrc.ukimauthcheckerapi.controllers
 import models.{AuthorisationRequest, ErrorMessage}
 import connectors.PdsAuthCheckerConnector
 import play.api.mvc.{Action, ControllerComponents}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import services.ConverterService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
@@ -33,19 +33,25 @@ class AuthorisationsController @Inject()(
   val authConnector: AuthConnector,
   pdsAuthCheckerConnector: PdsAuthCheckerConnector,
   converterService: ConverterService
-) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions  {
+) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
-    authorised() {
-      pdsAuthCheckerConnector.check(request.body).map {
-        res =>
-          Ok(Json.toJson(converterService.convert(res)))
-      }
-    } recover {
-      case ex: NoActiveSession =>
-        Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))
-      case ex: AuthorisationException =>
-        Forbidden(Json.toJson((ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))))
+  def authorisations: Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[AuthorisationRequest] match {
+      case JsSuccess(aRequest, _) =>
+        authorised() {
+          pdsAuthCheckerConnector.check(aRequest).map {
+            res =>
+              Ok(Json.toJson(converterService.convert(res)))
+          }
+        } recover {
+          case ex: NoActiveSession =>
+            Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))
+          case ex: AuthorisationException =>
+            Forbidden(Json.toJson((ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))))
+        }
+      case JsError(_) =>
+        Future.successful(BadRequest(Json.toJson(ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required"))))
     }
+
   }
 }
