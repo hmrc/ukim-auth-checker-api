@@ -31,7 +31,7 @@ trait TestCommonGenerators {
     eoris <- eorisGen
     now = LocalDate.now()
     date <- Gen.option(Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS)))
-  } yield AuthorisationRequest(eoris, date)
+  } yield AuthorisationRequest(eoris, Some(date.toString))
 
   implicit lazy val arbitraryAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary(authorisationRequestGen)
 

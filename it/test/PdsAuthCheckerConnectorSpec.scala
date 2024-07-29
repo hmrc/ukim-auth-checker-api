@@ -17,7 +17,15 @@
 import base.TestCommonGenerators
 import config.UKIMSServicesConfig
 import connectors.PdsAuthCheckerConnectorImpl
-import models.{Eori, PdsAuthCheckerResponse, PdsAuthCheckerResult}
+import models.{
+  AuthorisedBadRequestCode,
+  DateValidationError,
+  Eori,
+  EoriValidationError,
+  PdsAuthCheckerResponse,
+  PdsAuthCheckerResult,
+  ValidationErrorResponse
+}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -30,13 +38,14 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PdsAuthCheckerConnectorSpec extends AnyWordSpec
-  with Matchers
-  with ScalaFutures
-  with HttpClientV2Support
-  with TestCommonGenerators
-  with IntegrationPatience
-  with WireMockSupport {
+class PdsAuthCheckerConnectorSpec
+    extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with HttpClientV2Support
+    with TestCommonGenerators
+    with IntegrationPatience
+    with WireMockSupport {
 
   private val configuration = Configuration(
     "appName" -> "pds-auth-checker-api",
@@ -56,7 +65,7 @@ class PdsAuthCheckerConnectorSpec extends AnyWordSpec
   private val pdsConnector =
     new PdsAuthCheckerConnectorImpl(httpClientV2, wiremockServerConfig)
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "PdsAuthCheckerConnector" when {
     "a request is made" should {
@@ -86,12 +95,86 @@ class PdsAuthCheckerConnectorSpec extends AnyWordSpec
           .check(authorisationRequestGen.sample.get)
           .futureValue
 
-        response shouldBe PdsAuthCheckerResponse(
-          LocalDate.of(2021, 1, 1),
-          "UKIM",
-          Seq(
-            PdsAuthCheckerResult(Eori("GB120000000999"), valid = false, 1),
-            PdsAuthCheckerResult(Eori("GB120001000919"), valid = true, 0)
+        response shouldBe Right(
+          PdsAuthCheckerResponse(
+            LocalDate.of(2021, 1, 1),
+            "UKIM",
+            Seq(
+              PdsAuthCheckerResult(Eori("GB120000000999"), valid = false, 1),
+              PdsAuthCheckerResult(Eori("GB120001000919"), valid = true, 0)
+            )
+          )
+        )
+      }
+      "return an error response with body for an EORI validationError response from PdsAuthCheckerApi" in {
+        givenPdsReturns(
+          400,
+          pdsPath,
+          s"""{
+             |  "code": "INVALID_FORMAT",
+             |  "message": "Input format for request data",
+             |  "validationErrors": [
+             |    {
+             |      "eori": "GB1200000000122",
+             |      "validationError": "Invalid Format: Too many digits"
+             |    }
+             |  ]
+             |}""".stripMargin
+        )
+
+        val response = pdsConnector
+          .check(
+            authorisationRequestGen.sample.get
+              .copy(eoris = Seq(Eori("GB1200000000122")))
+          )
+          .futureValue
+
+        response shouldBe Left(
+          ValidationErrorResponse(
+            AuthorisedBadRequestCode.InvalidFormat,
+            "Input format for request data",
+            Seq(
+              EoriValidationError(
+                "GB1200000000122",
+                "Invalid Format: Too many digits"
+              )
+            )
+          )
+        )
+      }
+      "return an error response with body for a date validationError response from PdsAuthCheckerApi" in {
+        givenPdsReturns(
+          400,
+          pdsPath,
+          s"""{
+             |  "code": "INVALID_FORMAT",
+             |  "message": "Input format for request data",
+             |  "validationErrors": [
+             |    {
+             |      "date": "2021-01-0A",
+             |      "validationError": "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
+             |    }
+             |  ]
+             |}""".stripMargin
+        )
+
+        val response = pdsConnector
+          .check(
+            authorisationRequestGen.sample.get
+              .copy(date = Some("2021-01-0A"))
+          )
+          .futureValue
+
+        response shouldBe Left(
+          ValidationErrorResponse(
+            AuthorisedBadRequestCode.InvalidFormat,
+            "Input format for request data",
+            Seq(
+              DateValidationError(
+                "2021-01-0A",
+                "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
+              )
+            )
           )
         )
       }
@@ -119,8 +202,8 @@ class PdsAuthCheckerConnectorSpec extends AnyWordSpec
         val response = pdsConnector
           .check(authorisationRequestGen.sample.get)
 
-        whenReady(response.failed) {
-          r => r shouldBe a[Exception]
+        whenReady(response.failed) { r =>
+          r shouldBe a[Exception]
         }
 
       }

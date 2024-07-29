@@ -19,13 +19,13 @@ package uk.gov.hmrc.ukimauthcheckerapi.controllers
 import models.{AuthorisationRequest, ErrorMessage}
 import connectors.PdsAuthCheckerConnector
 import play.api.mvc.{Action, ControllerComponents}
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 import services.ConverterService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class AuthorisationsController @Inject()(
@@ -38,8 +38,12 @@ class AuthorisationsController @Inject()(
   def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
     authorised() {
       pdsAuthCheckerConnector.check(request.body).map {
-        res =>
-          Ok(Json.toJson(converterService.convert(res)))
+        case Right(pdsAuthCheckerResponse) => Ok(Json.toJson(converterService.convert(pdsAuthCheckerResponse)))
+        case Left(validationErrorResponse) => BadRequest(
+          Json.toJson(
+            validationErrorResponse
+          )
+        )
       }
     } recover {
       case ex: NoActiveSession =>
