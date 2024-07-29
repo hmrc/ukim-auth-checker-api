@@ -185,11 +185,11 @@ components:
                   "true - EORI is authorised, false - EORI is not authorised 
                   " Example:
                   {
-  "date": "2024-02-31",
-  "eoris": [
-    {
-      "eori": "GB123123123000",
-      "authorised": true
-    }
-  ]
-}"
+                  "date": "2024-02-31",
+                  "eoris": [
+                  {
+                  "eori": "GB123123123000",
+                  "authorised": true
+                  }
+                  ]
+                  }"
