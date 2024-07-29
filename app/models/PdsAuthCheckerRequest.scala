@@ -18,9 +18,8 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
 
-case class PdsAuthCheckerRequest(validityDate: Option[LocalDate], authType: String, eoris: Seq[Eori])
+case class PdsAuthCheckerRequest(validityDate: Option[String], authType: String, eoris: Seq[Eori])
 
 object PdsAuthCheckerRequest {
   implicit val format: OFormat[PdsAuthCheckerRequest] = Json.format[PdsAuthCheckerRequest]

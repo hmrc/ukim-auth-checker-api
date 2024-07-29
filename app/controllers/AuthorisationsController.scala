@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class AuthorisationsController @Inject()(
@@ -39,9 +39,13 @@ class AuthorisationsController @Inject()(
     request.body.validate[AuthorisationRequest] match {
       case JsSuccess(aRequest, _) =>
         authorised() {
-          pdsAuthCheckerConnector.check(aRequest).map {
-            res =>
-              Ok(Json.toJson(converterService.convert(res)))
+          pdsAuthCheckerConnector.check(request.body).map {
+            case Right(pdsAuthCheckerResponse) => Ok(Json.toJson(converterService.convert(pdsAuthCheckerResponse)))
+            case Left(validationErrorResponse) => BadRequest(
+              Json.toJson(
+                validationErrorResponse
+              )
+            )
           }
         } recover {
           case ex: NoActiveSession =>
@@ -51,6 +55,7 @@ class AuthorisationsController @Inject()(
         }
       case JsError(_) =>
         Future.successful(BadRequest(Json.toJson(ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required"))))
+
     }
 
   }

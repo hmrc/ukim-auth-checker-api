@@ -26,9 +26,10 @@ import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
-import models.{AuthorisationRequest, Eori, ErrorMessage, PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult}
+import models.{AuthorisationRequest, AuthorisedBadRequestCode, Eori, EoriValidationError, ErrorMessage, PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult, ValidationErrorResponse}
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
+
 import services.ConverterService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,28 +40,40 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 
 import java.time.LocalDate
 
-class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with MockitoSugar with Results {
+class AuthorisationsControllerSpec
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with Results {
 
   implicit val sys = ActorSystem("Test")
   implicit val mat = Materializer.matFromSystem
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
-    val mockPdsConnector: PdsAuthCheckerConnector = mock[PdsAuthCheckerConnector]
+    val mockPdsConnector: PdsAuthCheckerConnector =
+      mock[PdsAuthCheckerConnector]
     val mockConverterService: ConverterService = mock[ConverterService]
-    val controllerComponents: ControllerComponents = Helpers.stubControllerComponents()
-    val controller = new AuthorisationsController(controllerComponents, mockAuthConnector, mockPdsConnector, mockConverterService)
-    
+    val controllerComponents: ControllerComponents =
+      Helpers.stubControllerComponents()
+    val controller = new AuthorisationsController(
+      controllerComponents,
+      mockAuthConnector,
+      mockPdsConnector,
+      mockConverterService
+    )
+
   }
 
   val response =
     PdsAuthCheckerResponse(
-      LocalDate.of(2024,1,1),
+      LocalDate.of(2024, 1, 1),
       "UKIM",
       Seq(
         PdsAuthCheckerResult(Eori("GB123456123456"), true, 0),
         PdsAuthCheckerResult(Eori("XI123123123123"), false, 2)
-      ))
+      )
+    )
 
   val converted =
     UKIMAuthCheckerResponse(
@@ -71,14 +84,16 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       )
     )
 
-
   "AuthorisationsController" should {
 
     "return OK when authorised and response received from PdsAuthChecker" in new Setup {
-      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
         .thenReturn(Future.successful(()))
       when(mockPdsConnector.check(any())(any(), any()))
-        .thenReturn(Future.successful(response))
+        .thenReturn(Future.successful(Right(response)))
       when(mockConverterService.convert(any[PdsAuthCheckerResponse]))
         .thenReturn(converted)
 
@@ -99,7 +114,14 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
       val result = controller.authorisations()(request)
 
       status(result) shouldBe UNAUTHORIZED
-      contentAsString(result) shouldBe Json.toJson(ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided")).toString
+      contentAsString(result) shouldBe Json
+        .toJson(
+          ErrorMessage(
+            "MISSING_CREDENTIALS",
+            "Authentication information is not provided"
+          )
+        )
+        .toString
     }
 
     "return Forbidden when user is not authorised" in new Setup {
@@ -131,11 +153,47 @@ class AuthorisationsControllerSpec extends AnyWordSpec with Matchers with Mockit
         .thenReturn(Future.successful(()))
 
       val request = FakeRequest().withBody(Json.obj("bees" -> 5))
-
-      val result = controller.authorisations()(request)
-
       status(result) shouldBe BAD_REQUEST
       contentAsJson(result) shouldBe Json.toJson(ErrorMessage("INVALID_PAYLOAD","Valid Payload Required"))
+    }
+
+    "return Bad Request when incorrectly formatted request is submitted (backend)" in new Setup {
+      val errorResponse =
+        ValidationErrorResponse(
+          AuthorisedBadRequestCode.InvalidFormat,
+          "Input format for request data",
+          Seq(
+            EoriValidationError(
+              "GB12000000000111",
+              "Invalid Format: Too many digits"
+            )
+          )
+        )
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
+        .thenReturn(Future.successful(()))
+      when(mockPdsConnector.check(any())(any(), any()))
+        .thenReturn(Future.successful(Left(errorResponse)))
+      val request = FakeRequest().withBody(
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      )
+
+      val result = controller.authorisations()(request)
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe
+        Json
+          .obj(
+            "code" -> "INVALID_FORMAT",
+            "message" -> "Input format for request data",
+            "validationErrors" -> Json.arr(
+              Json.obj(
+                "eori" -> "GB12000000000111",
+                "validationError" -> "Invalid Format: Too many digits"
+              )
+            )
+          )
     }
   }
 }
