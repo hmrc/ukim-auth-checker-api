@@ -26,7 +26,18 @@ import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.ukimauthcheckerapi.controllers.AuthorisationsController
-import models.{AuthorisationRequest, AuthorisedBadRequestCode, Eori, EoriValidationError, ErrorMessage, PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult, ValidationErrorResponse}
+import models.{
+  AuthorisationRequest,
+  AuthorisedBadRequestCode,
+  Eori,
+  EoriValidationError,
+  ErrorMessage,
+  PdsAuthCheckerResponse,
+  PdsAuthCheckerResult,
+  UKIMAuthCheckerResponse,
+  UKIMAuthCheckerResult,
+  ValidationErrorResponse
+}
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
 
@@ -97,7 +108,9 @@ class AuthorisationsControllerSpec
       when(mockConverterService.convert(any[PdsAuthCheckerResponse]))
         .thenReturn(converted)
 
-      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
+      val request = FakeRequest().withBody(
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      )
 
       val result: Future[Result] = controller.authorisations()(request)
 
@@ -109,7 +122,9 @@ class AuthorisationsControllerSpec
       when(mockAuthConnector.authorise(any(), any())(any(), any()))
         .thenReturn(Future.failed(new NoActiveSession("No active session") {}))
 
-      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
+      val request = FakeRequest().withBody(
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      )
 
       val result = controller.authorisations()(request)
 
@@ -128,16 +143,23 @@ class AuthorisationsControllerSpec
       when(mockAuthConnector.authorise(any(), any())(any(), any()))
         .thenReturn(Future.failed(new AuthorisationException("Forbidden") {}))
 
-      val request = FakeRequest().withBody(Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None)))
+      val request = FakeRequest().withBody(
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
+      )
 
       val result = controller.authorisations()(request)
 
       status(result) shouldBe FORBIDDEN
-      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("FORBIDDEN", "You are not allowed to access this resource")
+      )
     }
 
     "return BadRequest when empty body provided" in new Setup {
-      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
         .thenReturn(Future.successful(()))
 
       val request = FakeRequest().withBody(Json.toJson(""))
@@ -145,16 +167,26 @@ class AuthorisationsControllerSpec
       val result = controller.authorisations()(request)
 
       status(result) shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("INVALID_PAYLOAD","Valid Payload Required"))
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
+      )
     }
 
     "return BadRequest when unsupported json provided" in new Setup {
-      when(mockAuthConnector.authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any()))
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
         .thenReturn(Future.successful(()))
 
       val request = FakeRequest().withBody(Json.obj("bees" -> 5))
+
+      val result = controller.authorisations()(request)
+
       status(result) shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe Json.toJson(ErrorMessage("INVALID_PAYLOAD","Valid Payload Required"))
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
+      )
     }
 
     "return Bad Request when incorrectly formatted request is submitted (backend)" in new Setup {

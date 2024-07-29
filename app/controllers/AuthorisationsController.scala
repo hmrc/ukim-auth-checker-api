@@ -25,38 +25,64 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class AuthorisationsController @Inject()(
-  cc: ControllerComponents,
-  val authConnector: AuthConnector,
-  pdsAuthCheckerConnector: PdsAuthCheckerConnector,
-  converterService: ConverterService
-) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
+class AuthorisationsController @Inject() (
+    cc: ControllerComponents,
+    val authConnector: AuthConnector,
+    pdsAuthCheckerConnector: PdsAuthCheckerConnector,
+    converterService: ConverterService
+)(implicit ec: ExecutionContext)
+    extends BackendController(cc)
+    with AuthorisedFunctions {
 
-  def authorisations: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    request.body.validate[AuthorisationRequest] match {
-      case JsSuccess(aRequest, _) =>
-        authorised() {
-          pdsAuthCheckerConnector.check(request.body).map {
-            case Right(pdsAuthCheckerResponse) => Ok(Json.toJson(converterService.convert(pdsAuthCheckerResponse)))
-            case Left(validationErrorResponse) => BadRequest(
+  def authorisations: Action[JsValue] = Action.async(parse.json) {
+    implicit request =>
+      request.body.validate[AuthorisationRequest] match {
+        case JsSuccess(aRequest, _) =>
+          authorised() {
+            pdsAuthCheckerConnector.check(aRequest).map {
+              case Right(pdsAuthCheckerResponse) =>
+                Ok(
+                  Json.toJson(converterService.convert(pdsAuthCheckerResponse))
+                )
+              case Left(validationErrorResponse) =>
+                BadRequest(
+                  Json.toJson(
+                    validationErrorResponse
+                  )
+                )
+            }
+          } recover {
+            case ex: NoActiveSession =>
+              Unauthorized(
+                Json.toJson(
+                  (ErrorMessage(
+                    "MISSING_CREDENTIALS",
+                    "Authentication information is not provided"
+                  ))
+                )
+              )
+            case ex: AuthorisationException =>
+              Forbidden(
+                Json.toJson(
+                  (ErrorMessage(
+                    "FORBIDDEN",
+                    "You are not allowed to access this resource"
+                  ))
+                )
+              )
+          }
+        case JsError(_) =>
+          Future.successful(
+            BadRequest(
               Json.toJson(
-                validationErrorResponse
+                ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
               )
             )
-          }
-        } recover {
-          case ex: NoActiveSession =>
-            Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))
-          case ex: AuthorisationException =>
-            Forbidden(Json.toJson((ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))))
-        }
-      case JsError(_) =>
-        Future.successful(BadRequest(Json.toJson(ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required"))))
-
-    }
+          )
+      }
 
   }
 }
