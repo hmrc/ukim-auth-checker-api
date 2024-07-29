@@ -176,7 +176,7 @@ components:
           items:
             type: string
             example: GB123123123000
-            description: "There can be a maximum of 3000 EORI numbers in a request. A valid EORI must begin with GB or XI as country code and contain between 12 and 15 characters."
+            description: "There can be a maximum of 3000 EORI numbers in a request. A valid EORI must begin with GB or XI as country code and contain 14 characters."
     Authorisations:
       type: object
       properties:
