@@ -19,37 +19,70 @@ package uk.gov.hmrc.ukimauthcheckerapi.controllers
 import models.{AuthorisationRequest, ErrorMessage}
 import connectors.PdsAuthCheckerConnector
 import play.api.mvc.{Action, ControllerComponents}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import services.ConverterService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class AuthorisationsController @Inject()(
-  cc: ControllerComponents,
-  val authConnector: AuthConnector,
-  pdsAuthCheckerConnector: PdsAuthCheckerConnector,
-  converterService: ConverterService
-) (implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions  {
+class AuthorisationsController @Inject() (
+    cc: ControllerComponents,
+    val authConnector: AuthConnector,
+    pdsAuthCheckerConnector: PdsAuthCheckerConnector,
+    converterService: ConverterService
+)(implicit ec: ExecutionContext)
+    extends BackendController(cc)
+    with AuthorisedFunctions {
 
-  def authorisations: Action[AuthorisationRequest] = Action.async(parse.json[AuthorisationRequest]) { implicit request =>
-    authorised() {
-      pdsAuthCheckerConnector.check(request.body).map {
-        case Right(pdsAuthCheckerResponse) => Ok(Json.toJson(converterService.convert(pdsAuthCheckerResponse)))
-        case Left(validationErrorResponse) => BadRequest(
-          Json.toJson(
-            validationErrorResponse
+  def authorisations: Action[JsValue] = Action.async(parse.json) {
+    implicit request =>
+      request.body.validate[AuthorisationRequest] match {
+        case JsSuccess(aRequest, _) =>
+          authorised() {
+            pdsAuthCheckerConnector.check(aRequest).map {
+              case Right(pdsAuthCheckerResponse) =>
+                Ok(
+                  Json.toJson(converterService.convert(pdsAuthCheckerResponse))
+                )
+              case Left(validationErrorResponse) =>
+                BadRequest(
+                  Json.toJson(
+                    validationErrorResponse
+                  )
+                )
+            }
+          } recover {
+            case ex: NoActiveSession =>
+              Unauthorized(
+                Json.toJson(
+                  (ErrorMessage(
+                    "MISSING_CREDENTIALS",
+                    "Authentication information is not provided"
+                  ))
+                )
+              )
+            case ex: AuthorisationException =>
+              Forbidden(
+                Json.toJson(
+                  (ErrorMessage(
+                    "FORBIDDEN",
+                    "You are not allowed to access this resource"
+                  ))
+                )
+              )
+          }
+        case JsError(_) =>
+          Future.successful(
+            BadRequest(
+              Json.toJson(
+                ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
+              )
+            )
           )
-        )
       }
-    } recover {
-      case ex: NoActiveSession =>
-        Unauthorized(Json.toJson((ErrorMessage("MISSING_CREDENTIALS", "Authentication information is not provided"))))
-      case ex: AuthorisationException =>
-        Forbidden(Json.toJson((ErrorMessage("FORBIDDEN", "You are not allowed to access this resource"))))
-    }
+
   }
 }

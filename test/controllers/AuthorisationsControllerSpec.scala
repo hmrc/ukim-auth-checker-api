@@ -38,6 +38,9 @@ import models.{
   UKIMAuthCheckerResult,
   ValidationErrorResponse
 }
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
+
 import services.ConverterService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,6 +56,9 @@ class AuthorisationsControllerSpec
     with Matchers
     with MockitoSugar
     with Results {
+
+  implicit val sys = ActorSystem("Test")
+  implicit val mat = Materializer.matFromSystem
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -103,7 +109,7 @@ class AuthorisationsControllerSpec
         .thenReturn(converted)
 
       val request = FakeRequest().withBody(
-        AuthorisationRequest(Seq(Eori("test-eori")), None)
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
       )
 
       val result: Future[Result] = controller.authorisations()(request)
@@ -117,7 +123,7 @@ class AuthorisationsControllerSpec
         .thenReturn(Future.failed(new NoActiveSession("No active session") {}))
 
       val request = FakeRequest().withBody(
-        AuthorisationRequest(Seq(Eori("test-eori")), None)
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
       )
 
       val result = controller.authorisations()(request)
@@ -138,22 +144,52 @@ class AuthorisationsControllerSpec
         .thenReturn(Future.failed(new AuthorisationException("Forbidden") {}))
 
       val request = FakeRequest().withBody(
-        AuthorisationRequest(Seq(Eori("test-eori")), None)
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
       )
 
       val result = controller.authorisations()(request)
 
       status(result) shouldBe FORBIDDEN
-      contentAsString(result) shouldBe Json
-        .toJson(
-          ErrorMessage(
-            "FORBIDDEN",
-            "You are not allowed to access this resource"
-          )
-        )
-        .toString
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("FORBIDDEN", "You are not allowed to access this resource")
+      )
     }
-    "return Bad Request when incorrectly formatted request is submitted" in new Setup {
+
+    "return BadRequest when empty body provided" in new Setup {
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
+        .thenReturn(Future.successful(()))
+
+      val request = FakeRequest().withBody(Json.toJson(""))
+
+      val result = controller.authorisations()(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
+      )
+    }
+
+    "return BadRequest when unsupported json provided" in new Setup {
+      when(
+        mockAuthConnector
+          .authorise(any[Predicate](), any[Retrieval[Unit]]())(any(), any())
+      )
+        .thenReturn(Future.successful(()))
+
+      val request = FakeRequest().withBody(Json.obj("bees" -> 5))
+
+      val result = controller.authorisations()(request)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(
+        ErrorMessage("INVALID_PAYLOAD", "Valid Payload Required")
+      )
+    }
+
+    "return Bad Request when incorrectly formatted request is submitted (backend)" in new Setup {
       val errorResponse =
         ValidationErrorResponse(
           AuthorisedBadRequestCode.InvalidFormat,
@@ -173,11 +209,10 @@ class AuthorisationsControllerSpec
       when(mockPdsConnector.check(any())(any(), any()))
         .thenReturn(Future.successful(Left(errorResponse)))
       val request = FakeRequest().withBody(
-        AuthorisationRequest(Seq(Eori("test-eori")), None)
+        Json.toJson(AuthorisationRequest(Seq(Eori("test-eori")), None))
       )
 
       val result = controller.authorisations()(request)
-
       status(result) shouldBe BAD_REQUEST
       contentAsJson(result) shouldBe
         Json
