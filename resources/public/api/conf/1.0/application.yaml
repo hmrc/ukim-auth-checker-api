@@ -184,7 +184,7 @@ components:
                 example: true
                 description: | 
                   "true - EORI is authorised, false - EORI is not authorised 
-                  " Example:
+                   Example:
                   {
                   "date": "2024-02-31",
                   "eoris": [
