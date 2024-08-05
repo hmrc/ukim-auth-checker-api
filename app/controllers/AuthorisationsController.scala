@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ukimauthcheckerapi.controllers
 
-import models.{AuthorisationRequest, ErrorMessage}
+import models.{AuthorisationRequest, DatedAuthorisationRequest, ErrorMessage}
 import connectors.PdsAuthCheckerConnector
 import play.api.mvc.{Action, ControllerComponents}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
@@ -24,6 +24,7 @@ import services.ConverterService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.auth.core._
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,10 +43,18 @@ class AuthorisationsController @Inject() (
       request.body.validate[AuthorisationRequest] match {
         case JsSuccess(aRequest, _) =>
           authorised() {
-            pdsAuthCheckerConnector.check(aRequest).map {
+            val datedRequest =
+              DatedAuthorisationRequest.createFromRequest(aRequest)
+
+            pdsAuthCheckerConnector.check(datedRequest).map {
               case Right(pdsAuthCheckerResponse) =>
                 Ok(
-                  Json.toJson(converterService.convert(pdsAuthCheckerResponse))
+                  Json.toJson(
+                    converterService.convert(
+                      pdsAuthCheckerResponse,
+                      date = LocalDate.parse(datedRequest.date)
+                    )
+                  )
                 )
               case Left(validationErrorResponse) =>
                 BadRequest(
@@ -55,7 +64,7 @@ class AuthorisationsController @Inject() (
                 )
             }
           } recover {
-            case ex: NoActiveSession =>
+            case _: NoActiveSession =>
               Unauthorized(
                 Json.toJson(
                   (ErrorMessage(
@@ -64,7 +73,7 @@ class AuthorisationsController @Inject() (
                   ))
                 )
               )
-            case ex: AuthorisationException =>
+            case _: AuthorisationException =>
               Forbidden(
                 Json.toJson(
                   (ErrorMessage(

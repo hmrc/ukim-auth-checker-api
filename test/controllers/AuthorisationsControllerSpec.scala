@@ -40,7 +40,6 @@ import models.{
 }
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
-
 import services.ConverterService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,7 +48,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 class AuthorisationsControllerSpec
     extends AnyWordSpec
@@ -57,8 +56,8 @@ class AuthorisationsControllerSpec
     with MockitoSugar
     with Results {
 
-  implicit val sys = ActorSystem("Test")
-  implicit val mat = Materializer.matFromSystem
+  implicit val sys: ActorSystem = ActorSystem("Test")
+  implicit val mat: Materializer = Materializer.matFromSystem
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -78,7 +77,7 @@ class AuthorisationsControllerSpec
 
   val response =
     PdsAuthCheckerResponse(
-      LocalDate.of(2024, 1, 1),
+      LocalDateTime.of(2024, 1, 1, 0, 0),
       "UKIM",
       Seq(
         PdsAuthCheckerResult(Eori("GB123456123456"), true, 0),
@@ -105,7 +104,12 @@ class AuthorisationsControllerSpec
         .thenReturn(Future.successful(()))
       when(mockPdsConnector.check(any())(any(), any()))
         .thenReturn(Future.successful(Right(response)))
-      when(mockConverterService.convert(any[PdsAuthCheckerResponse]))
+      when(
+        mockConverterService.convert(
+          any[PdsAuthCheckerResponse],
+          any[LocalDate]
+        )
+      )
         .thenReturn(converted)
 
       val request = FakeRequest().withBody(

@@ -18,16 +18,22 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 
-case class PdsAuthCheckerResponse(processingDate: LocalDate, authType: String, results: Seq[PdsAuthCheckerResult])
+case class PdsAuthCheckerResponse(
+    processingDate: LocalDateTime,
+    authType: String,
+    results: Seq[PdsAuthCheckerResult]
+)
 
 object PdsAuthCheckerResponse {
-  implicit val format: OFormat[PdsAuthCheckerResponse] = Json.format[PdsAuthCheckerResponse]
+  implicit val format: OFormat[PdsAuthCheckerResponse] =
+    Json.format[PdsAuthCheckerResponse]
 }
 
 case class PdsAuthCheckerResult(eori: Eori, valid: Boolean, code: Int)
 
 object PdsAuthCheckerResult {
-  implicit val format: OFormat[PdsAuthCheckerResult] = Json.format[PdsAuthCheckerResult]
+  implicit val format: OFormat[PdsAuthCheckerResult] =
+    Json.format[PdsAuthCheckerResult]
 }

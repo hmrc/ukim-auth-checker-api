@@ -18,7 +18,7 @@ package connectors
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import models.{
-  AuthorisationRequest,
+  DatedAuthorisationRequest,
   PdsAuthCheckerRequest,
   PdsAuthCheckerResponse,
   ValidationErrorResponse
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[PdsAuthCheckerConnectorImpl])
 trait PdsAuthCheckerConnector {
-  def check(request: AuthorisationRequest)(implicit
+  def check(request: DatedAuthorisationRequest)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext
   ): Future[Either[ValidationErrorResponse, PdsAuthCheckerResponse]]
@@ -51,7 +51,7 @@ class PdsAuthCheckerConnectorImpl @Inject() (
     httpClientV2: HttpClientV2,
     appConfig: AppConfig
 ) extends PdsAuthCheckerConnector {
-  def check(request: AuthorisationRequest)(implicit
+  def check(request: DatedAuthorisationRequest)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext
   ): Future[Either[ValidationErrorResponse, PdsAuthCheckerResponse]] = {
