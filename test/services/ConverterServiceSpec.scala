@@ -17,25 +17,37 @@
 package services
 
 import base.TestCommonGenerators
-import models.{PdsAuthCheckerResponse, UKIMAuthCheckerResponse, UKIMAuthCheckerResult}
+import models.{
+  PdsAuthCheckerResponse,
+  UKIMAuthCheckerResponse,
+  UKIMAuthCheckerResult
+}
 import org.scalacheck.Arbitrary
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 
-class ConverterServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with TestCommonGenerators{
+import java.time.LocalDate
+
+class ConverterServiceSpec
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with TestCommonGenerators {
 
   val sut = new ConverterService()
 
-
-
   "convert(PdsAuthCheckerResponse)" should {
     "return a UKIMAuthCheckerResponse" in {
-        val input = Arbitrary.arbitrary[PdsAuthCheckerResponse].sample.get
-        val expectedResult = UKIMAuthCheckerResponse(input.processingDate, input.results.map {
-          r => UKIMAuthCheckerResult(r.eori, r.valid)
-        })
-        sut.convert(input) shouldBe expectedResult
-      }
+      val date = Arbitrary.arbitrary[LocalDate].sample.get
+      val input = Arbitrary.arbitrary[PdsAuthCheckerResponse].sample.get
+      val expectedResult = UKIMAuthCheckerResponse(
+        date,
+        input.results.map { r =>
+          UKIMAuthCheckerResult(r.eori, r.valid)
+        }
+      )
+      sut.convert(input, date) shouldBe expectedResult
     }
+  }
 }

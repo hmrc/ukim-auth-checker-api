@@ -35,7 +35,7 @@ import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 import uk.gov.hmrc.ukimauthcheckerapi.config.AppConfig
 import com.github.tomakehurst.wiremock.client.WireMock._
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class PdsAuthCheckerConnectorSpec
@@ -74,7 +74,7 @@ class PdsAuthCheckerConnectorSpec
           200,
           pdsPath,
           s"""{
-             |  "processingDate": "2021-01-01",
+             |  "processingDate": "2021-01-01T00:00:00",
              |  "authType": "UKIM",
              |  "results": [
              |    {
@@ -92,12 +92,12 @@ class PdsAuthCheckerConnectorSpec
         )
 
         val response = pdsConnector
-          .check(authorisationRequestGen.sample.get)
+          .check(datedAuthorisationRequest.sample.get)
           .futureValue
 
         response shouldBe Right(
           PdsAuthCheckerResponse(
-            LocalDate.of(2021, 1, 1),
+            LocalDateTime.of(2021, 1, 1, 0, 0),
             "UKIM",
             Seq(
               PdsAuthCheckerResult(Eori("GB120000000999"), valid = false, 1),
@@ -124,7 +124,7 @@ class PdsAuthCheckerConnectorSpec
 
         val response = pdsConnector
           .check(
-            authorisationRequestGen.sample.get
+            datedAuthorisationRequest.sample.get
               .copy(eoris = Seq(Eori("GB1200000000122")))
           )
           .futureValue
@@ -160,8 +160,8 @@ class PdsAuthCheckerConnectorSpec
 
         val response = pdsConnector
           .check(
-            authorisationRequestGen.sample.get
-              .copy(date = Some("2021-01-0A"))
+            datedAuthorisationRequest.sample.get
+              .copy(date = "2021-01-0A")
           )
           .futureValue
 
@@ -183,7 +183,7 @@ class PdsAuthCheckerConnectorSpec
           200,
           pdsPath,
           s"""{
-             |  "processingDate": "2021-01-01",
+             |  "processingDate": "2021-01-01T:00:00:00",
              |  "results": [
              |    {
              |      "eori": "GB120000000999",
@@ -200,7 +200,7 @@ class PdsAuthCheckerConnectorSpec
         )
 
         val response = pdsConnector
-          .check(authorisationRequestGen.sample.get)
+          .check(datedAuthorisationRequest.sample.get)
 
         whenReady(response.failed) { r =>
           r shouldBe a[Exception]

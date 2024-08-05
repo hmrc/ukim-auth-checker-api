@@ -16,12 +16,25 @@
 
 package services
 
-import models.{PdsAuthCheckerResponse, PdsAuthCheckerResult, UKIMAuthCheckerResponse, UKIMAuthCheckerResult}
+import models.{
+  PdsAuthCheckerResponse,
+  PdsAuthCheckerResult,
+  UKIMAuthCheckerResponse,
+  UKIMAuthCheckerResult
+}
+
+import java.time.LocalDate
 
 class ConverterService() {
 
-  def convert(input: PdsAuthCheckerResponse): UKIMAuthCheckerResponse =
-    UKIMAuthCheckerResponse(input.processingDate, input.results.map(r => convert(r)))
+  def convert(
+      input: PdsAuthCheckerResponse,
+      date: LocalDate
+  ): UKIMAuthCheckerResponse =
+    UKIMAuthCheckerResponse(
+      date,
+      input.results.map(r => convert(r))
+    )
 
   def convert(input: PdsAuthCheckerResult): UKIMAuthCheckerResult =
     UKIMAuthCheckerResult(input.eori, input.valid)

@@ -16,26 +16,44 @@
 
 package base
 
-import models.{AuthorisationRequest, Eori, PdsAuthCheckerResponse, PdsAuthCheckerResult}
+import models.{
+  AuthorisationRequest,
+  DatedAuthorisationRequest,
+  Eori,
+  PdsAuthCheckerResponse,
+  PdsAuthCheckerResult
+}
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 import java.time.temporal.ChronoUnit
 trait TestCommonGenerators {
-  lazy val eoriGen: Gen[Eori] =     Gen.alphaNumStr.map(Eori(_))
+  lazy val eoriGen: Gen[Eori] = Gen.alphaNumStr.map(Eori(_))
   lazy val eorisGen: Gen[Seq[Eori]] = Gen.listOfN(3000, eoriGen)
 
   lazy val authorisationRequestGen: Gen[AuthorisationRequest] = for {
     eoris <- eorisGen
     now = LocalDate.now()
-    date <- Gen.option(Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS)))
+    date <- Gen.option(
+      Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS))
+    )
   } yield AuthorisationRequest(eoris, Some(date.toString))
 
-  implicit lazy val arbitraryAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary(authorisationRequestGen)
+  lazy val datedAuthorisationRequest: Gen[DatedAuthorisationRequest] = for {
+    eoris <- eorisGen
+    now = LocalDate.now()
+    date <- Gen.option(
+      Gen.choose(now.minus(1, ChronoUnit.YEARS), now.plus(3, ChronoUnit.MONTHS))
+    )
+  } yield DatedAuthorisationRequest(eoris, date.toString)
 
-  implicit lazy val arbitraryPdsAuthCheckerResult: Arbitrary[PdsAuthCheckerResult] = Arbitrary {
+  implicit lazy val arbitraryAuthorisationRequest
+      : Arbitrary[AuthorisationRequest] = Arbitrary(authorisationRequestGen)
+
+  implicit lazy val arbitraryPdsAuthCheckerResult
+      : Arbitrary[PdsAuthCheckerResult] = Arbitrary {
     for {
       eori <- eoriGen
       code <- Gen.oneOf(0, 1, 2)
@@ -43,10 +61,11 @@ trait TestCommonGenerators {
     } yield PdsAuthCheckerResult(eori, valid, code)
   }
 
-  implicit lazy val arbitraryPdsAuthCheckerResponse: Arbitrary[PdsAuthCheckerResponse] = Arbitrary {
+  implicit lazy val arbitraryPdsAuthCheckerResponse
+      : Arbitrary[PdsAuthCheckerResponse] = Arbitrary {
     for {
       results <- arbitrary[Seq[PdsAuthCheckerResult]]
-      date = LocalDate.of(2024, 1, 1)
+      date = LocalDateTime.of(2024, 1, 1, 0, 0)
       authType = "UKIM"
     } yield PdsAuthCheckerResponse(date, authType, results)
   }

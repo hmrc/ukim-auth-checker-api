@@ -18,9 +18,27 @@ package models
 
 import play.api.libs.json._
 
+import java.time.LocalDate
 
 case class AuthorisationRequest(eoris: Seq[Eori], date: Option[String])
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
 
+object AuthorisationRequest {
+  implicit val format: OFormat[AuthorisationRequest] =
+    Json.format[AuthorisationRequest]
+
+}
+
+case class DatedAuthorisationRequest(eoris: Seq[Eori], date: String)
+
+object DatedAuthorisationRequest {
+  implicit val format: OFormat[DatedAuthorisationRequest] =
+    Json.format[DatedAuthorisationRequest]
+
+  def createFromRequest(
+      request: AuthorisationRequest
+  ): DatedAuthorisationRequest =
+    DatedAuthorisationRequest(
+      request.eoris,
+      request.date.getOrElse(LocalDate.now().toString)
+    )
 }
