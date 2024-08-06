@@ -248,14 +248,14 @@ components:
                 example: true
                 description: |
 
-                  "true - EORI is authorised, false - EORI is not authorised 
-                   Example:
-                  {
-                  "date": "2024-02-31",
-                  "eoris": [
-                  {
-                  "eori": "GB123123123000",
-                  "authorised": "true"
-                  }
-                           ]
+                  "true - EORI is authorised <br> false - EORI is not authorised <br>
+                  Example:<br>
+                  {<br>
+                  "date": "2024-02-31",<br>
+                  "eoris":<br> [ <br>
+                  {<br>
+                  "eori": "GB123123123000",<br>
+                  "authorised": "true"<br>
+                  }<br>
+                              ]<br>
                   }
