@@ -2,7 +2,6 @@ openapi: 3.0.3
 info:
   title: UK Internal Market Scheme (UKIMS) EORI Authorisaton Checker API Reference Guide
   description: |
-  # Overview
     This API allows Fast Parcel Operators (FPOs), software developers and third party software users to check if the holders of provided EORI Numbers have a valid UKIMS authorisation.
     The aim is to avoid possible rejections of goods moving through from GB-NI, which could physically stop the B2B parcels.
     The API is based on REST principles with a single POST method endpoint that returns data in JSON format. It uses standard HTTP error response codes. 
@@ -34,12 +33,16 @@ paths:
       operationId: requestAuth
       requestBody:
         description: | 
-          The payload of the API request. 
+          The payload of the API request. <br>
+          Example:
           
-          Request Example:
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations" <br>
+          { <br>
+          "date":"2024-02-31",<br>
+          "eoris": 
+          [<br>"GB123123123000", ]<br>
+          }
           
-          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-internal-market/authorisations"   
-                  
         required: true
         content:
           application/json:
@@ -64,16 +67,32 @@ paths:
             </ul>
           content:
             application/json:
-              example: 
-                {
-                  "code": "INVALID_FORMAT",
-                  "message": "FR123123123123 is not a suported EORI number" 
-                }
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
+                example:
+                - code: INVALID_REQUEST
+                  message: Invalid eori - eori parameters should be 14 digits
         '401':
           description: |
             Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
               example: 
                 {
                   "code": "MISSING_CREDENTIALS",
@@ -89,6 +108,15 @@ paths:
             </ul>
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string 
               example: 
                 {
                   "code": "FORBIDDEN",
@@ -99,6 +127,15 @@ paths:
             Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https. 
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
               example: 
                 {
                   "code": "METHOD_NOT_ALLOWED", 
@@ -113,6 +150,15 @@ paths:
             </ul>
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
               example: 
                 {
                   "code": "NOT_ACCEPTABLE",
@@ -123,6 +169,15 @@ paths:
             Request in excess of rate limit. The user has sent too many requests in a given amount of time.
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
               example: 
                 {
                   "code": "RATE_LIMIT_VIOLATION",
@@ -133,6 +188,15 @@ paths:
             Internal Server Error. The server has encountered a situation it does not know how to handle.
           content:
             application/json:
+              schema:
+                required:
+                - code
+                - message
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: string
               example: 
                 {
                   "code": "INTERNAL_SERVER_ERROR",
@@ -182,7 +246,8 @@ components:
               authorised:
                 type: boolean
                 example: true
-                description: | 
+                description: |
+
                   "true - EORI is authorised, false - EORI is not authorised 
                    Example:
                   {
@@ -190,7 +255,7 @@ components:
                   "eoris": [
                   {
                   "eori": "GB123123123000",
-                  "authorised": true
+                  "authorised": "true"
                   }
-                  ]
-                  }"
+                           ]
+                  }
