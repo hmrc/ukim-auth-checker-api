@@ -65,6 +65,27 @@ paths:
               <li>invalid format for EORI number</li>
               <li>invalid format for date</li>
             </ul>
+            Example Request 1
+            {
+            "eoris": [
+            "GB120000000001"
+                     ],
+            "date": "2024-08-1*"
+            }
+
+            Example Response 1
+            {
+            "code": "INVALID_FORMAT",
+            "message": "Input format for request data",
+            "validationErrors": [
+            {
+            "date": "2024-08-1*",
+            "validationError": "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
+            }
+            ]
+            }
+
+
           content:
             application/json:
               schema:
