@@ -65,58 +65,13 @@ paths:
               <li>invalid format for EORI number</li>
               <li>invalid format for date</li>
             </ul>
-            Example Request 1
-            {
-            "eoris": [
-            "GB120000000001"
-                     ],
-            "date": "2024-08-1*"
-            }
-
-            Example Response 1
-            {
-            "code": "INVALID_FORMAT",
-            "message": "Input format for request data",
-            "validationErrors": [
-            {
-            "date": "2024-08-1*",
-            "validationError": "Invalid Format: Dates must use ISO-8601 format YYYY-MM-DD"
-            }
-            ]
-            }
           content:
             application/json:
-              schema:
-                required:
-                - code
-                - message
-                properties:
-                  message:
-                    type: string
-                  code:
-                    type: string
-                example:
-                - code: INVALID_REQUEST
-                - message: Invalid eori - eori parameters should be 14 digits
-                - code: INVALID FORMAT
-                - message: ukim-auth-checker-api	{
-  "eoris": [
-    "GB12000000000"
-  ],
-  "date": "2024-08-14"
-}
-	{
-  "code": "INVALID_FORMAT",
-  "message": "Input format for request data",
-  "validationErrors": [
-    {
-      "eori": "GB12000000000",
-      "validationError": "Invalid Format: Too few digits"
-    }
-  ]
-}
-
-
+              example: 
+                {
+                  "code": "INVALID_FORMAT",
+                  "message": "FR123123123123 is not a suported EORI number" 
+                }
         '401':
           description: |
             Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
