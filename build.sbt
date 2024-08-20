@@ -21,13 +21,7 @@ lazy val microservice = Project("ukim-auth-checker-api", file("."))
   )
   .settings(CodeCoverageSettings.settings: _*)
   .settings(
-    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
-    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*config.*;" +
-      ".*BuildInfo.*;.*javascript.*;.*Routes.*;.*GuiceInjector;" +
-      ".*testonly.*;.*models.*;.*job.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 90,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources"
   )
 
 lazy val it = project
