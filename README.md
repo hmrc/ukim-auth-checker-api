@@ -1,7 +1,7 @@
 
 # UKIM Auth Checker Api README
 
-This is a microservice for a public API to allow software developers to integrate UKD checks into their software.
+This is a microservice for a public API to allow software developers to integrate UKIM checks into their software.
 
 ### Prerequisites
 - Scala 2.13.12
